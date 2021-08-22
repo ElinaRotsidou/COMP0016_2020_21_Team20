@@ -7,14 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model hospitals {
-  id              Int           @id @default(autoincrement())
-  name            String
-  health_board_id Int
-  health_boards   health_boards @relation(fields: [health_board_id], references: [id])
-  departments     departments[]
-}
-
 model questions {
   id            Int             @id @default(autoincrement())
   default_url   String
@@ -24,19 +16,20 @@ model questions {
   archived      Boolean?        @default(false)
   standards     standards       @relation(fields: [standard_id], references: [id])
   question_urls question_urls[]
-  words         words[]
+  platform_id   Int
+  category_id   Int
+  categories    categories @relation(fields: [category_id], references: [id])
 }
 
 model responses {
   id                   Int         @id @default(autoincrement())
   user_id              String
   timestamp            DateTime
-  department_id        Int
+  platform_id          Int
   is_mentoring_session Boolean
-  departments          departments @relation(fields: [department_id], references: [id])
+  platforms             platforms @relation(fields: [platform_id], references: [id])
   users                users       @relation(fields: [user_id], references: [id])
   scores               scores[]
-  words                words[]
 }
 
 model scores {
@@ -62,65 +55,49 @@ model users {
   responses responses[]
 }
 
-model words {
-  id          Int       @id @default(autoincrement())
-  response_id Int
-  word        String
-  question_id Int
-  questions   questions @relation(fields: [question_id], references: [id])
-  responses   responses @relation(fields: [response_id], references: [id])
-}
-
-model health_boards {
-  id        Int         @id @default(autoincrement())
-  name      String
-  hospitals hospitals[]
-}
-
-model departments {
+model platforms{
   id                    Int                    @id @default(autoincrement())
   name                  String
-  hospital_id           Int
   archived              Boolean?               @default(false)
-  hospitals             hospitals              @relation(fields: [hospital_id], references: [id])
-  clinician_join_codes  clinician_join_codes?
-  department_join_codes department_join_codes?
+  user_join_codes       user_join_codes?
   question_urls         question_urls[]
   responses             responses[]
+  categories            categories[]
 }
 
 model question_urls {
   question_id   Int
-  department_id Int
+  platform_id   Int
   url           String
-  departments   departments @relation(fields: [department_id], references: [id])
+  platforms     platforms @relation(fields: [platform_id], references: [id])
   questions     questions   @relation(fields: [question_id], references: [id])
 
-  @@id([question_id, department_id])
+  @@id([question_id, platform_id])
 }
 
-model clinician_join_codes {
-  department_id Int         @id
+model user_join_codes {
+  platform_id   Int         @id
   code          String
-  departments   departments @relation(fields: [department_id], references: [id])
+  platforms    platforms @relation(fields: [platform_id], references: [id])
 }
 
-model department_join_codes {
-  department_id Int         @id
-  code          String
-  departments   departments @relation(fields: [department_id], references: [id])
+model categories {
+  id            Int         @id @default(autoincrement())
+  platform_id   Int        
+  type          String
+  questions     questions[]
+
+  platforms     platforms @relation(fields: [platform_id], references: [id])
 }
+
 
 enum question_type {
   likert_scale
-  words
 }
+
 
 enum user_type {
   unknown
-  platform_administrator
-  health_board
-  hospital
-  department_manager
-  clinician
+  admin
+  user
 }

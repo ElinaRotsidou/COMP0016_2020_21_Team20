@@ -92,7 +92,29 @@ function Header({ session, toggleTheme }) {
             }>
             help
           </Nav.Item>
+          <Link href="/platforms">
+            <Nav.Item onClick={() => <a href="/platforms" />}>
+              platforms
+            </Nav.Item>
+          </Link>
         </ul>
+
+        {/* <div
+        ref={mobileMenuRef}
+        className={`${styles.links} ${isOpen ? styles.open : ''}`}>
+        {session && renderLinks()}
+        <ul className={styles.list}>
+          <Link href="/maria"> 
+          <Nav.Item
+            onClick={() =>
+             <a href="/maria"/> 
+            }>
+            maria
+          </Nav.Item>
+          </Link>
+        </ul>
+        </div> */}
+
         <div className={styles.profile}>
           {session ? (
             <ProfileButton session={session} />

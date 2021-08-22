@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Button, Icon, Input, SelectPicker, Alert } from 'rsuite';
+import {
+  Button,
+  Icon,
+  Input,
+  SelectPicker,
+  Alert,
+  Panel,
+  PanelGroup,
+} from 'rsuite';
 import { mutate } from 'swr';
 
 import styles from './QuestionsTable.module.css';
@@ -7,75 +15,94 @@ import styles from './QuestionsTable.module.css';
 import { AlertDialog, CustomTable } from '../';
 import useSWR from '../../lib/swr';
 
-const columns = [
-  {
-    id: 'question',
-    label: 'Question body',
-    width: '40%',
-    render: (edited, row, host, i) => {
-      if (edited) {
-        // If this question is being edited then it needs to be an input box
-        // Copy all the info about the row being currently edited
-        const buffer = {};
-        Object.assign(buffer, row);
-        editedRow = buffer;
-        return (
-          <Input
-            id={'questionInput' + i}
-            className={styles.input}
-            key={row.standards.name}
-            defaultValue={row.body}
-            onChange={value => (editedRow.body = value)}
-          />
-        );
-      } else {
-        // Else just display body
-        return <div id={'question' + i}>{row.body}</div>;
-      }
-    },
-  },
-  {
-    id: 'standard',
-    label: 'Standard',
-    width: 'auto',
-    render: (edited, row) => row.standards.name,
-  },
-  {
-    id: 'url',
-    label: 'Training URL',
-    width: 'auto',
-    render: (edited, row) => {
-      if (edited) {
-        // If this url is being edited then it needs to be an input box
-        // Copy all the info about the row being currently edited
-        const buffer = {};
-        Object.assign(buffer, row);
-        editedRow = buffer;
-        return (
-          <Input
-            className={styles.input}
-            key={row.standards.name}
-            defaultValue={row.url}
-            onChange={value => (editedRow.url = value)}
-          />
-        );
-      } else {
-        // Else just display URL as link
-        return (
-          <a href={row.url} target="_blank" rel="noopener noreferrer">
-            {row.url}
-          </a>
-        );
-      }
-    },
-  },
-  { id: 'actions', label: 'Actions', width: 'auto' },
-];
+// const columns = [
+//   {
+//     id: 'question',
+//     label: 'Question body',
+//     width: '40%',
+//     render: (edited, row, host, i) => {
+//       if (edited) {
+//         // If this question is being edited then it needs to be an input box
+//         // Copy all the info about the row being currently edited
+//         const buffer = {};
+//         Object.assign(buffer, row);
+//         editedRow = buffer;
+//         return (
+//           <Input
+//             id={'questionInput' + i}
+//             className={styles.input}
+//             key={row.standards.name}
+//             defaultValue={row.body}
+//             onChange={value => (editedRow.body = value)}
+//           />
+//         );
+//       } else {
+//         // Else just display body
+//         return <div id={'question' + i}>{row.body}</div>;
+//       }
+//     },
+//   },
+//   {
+//     id: 'standard',
+//     label: 'Standard',
+//     width: 'auto',
+//     render: (edited, row) => row.standards.name,
+//   },
+//   {
+//     id: 'category',
+//     label: 'Category',
+//     width: 'auto',
+//     render: (edited, row) => row.category,
+//   },
+//   {
+//     id: 'url',
+//     label: 'Training URL',
+//     width: 'auto',
+//     render: (edited, row) => {
+//       if (edited) {
+//         // If this url is being edited then it needs to be an input box
+//         // Copy all the info about the row being currently edited
+//         const buffer = {};
+//         Object.assign(buffer, row);
+//         editedRow = buffer;
+//         return (
+//           <Input
+//             className={styles.input}
+//             key={row.standards.name}
+//             defaultValue={row.url}
+//             onChange={value => (editedRow.url = value)}
+//           />
+//         );
+//       } else {
+//         // Else just display URL as link
+//         return (
+//           <a href={row.url} target="_blank" rel="noopener noreferrer">
+//             {row.url}
+//           </a>
+//         );
+//       }
+//     },
+//   },
+//   { id: 'actions', label: 'Actions', width: 'auto' },
+
+//   <Panel header="Panel title" bordered>
+//     {/* <Paragraph /> */}
+//   </Panel>
+// ];
+
+// const instance = (
+//   <Panel header="Panel title" bordered>
+//     {/* <Paragraph /> */}
+//   </Panel>
+// );
 
 const useQuestions = () => {
   const { data, error } = useSWR('/api/questions?default_urls=1');
 
   if (data) {
+    console.log(data);
+    console.log('maria');
+
     return {
       data: data ? data.likert_scale : [],
       error: error || data.error,
@@ -313,12 +340,12 @@ export default function QuestionsTable() {
         <div>Add new question</div>
       </Button>
 
-      <CustomTable
+      {/* <CustomTable
         data={questions}
         columns={columns}
         renderActionCells={renderActionCells}
         editing={editing}
-      />
+      /> */}
     </div>
   );
 }

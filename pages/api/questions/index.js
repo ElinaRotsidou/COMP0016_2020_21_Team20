@@ -148,6 +148,7 @@ const handler = async (req, res) => {
   if (req.method === 'GET') {
     const queryParams = {
       id: true,
+      category: true,
       body: true,
       default_url: true,
       type: true,

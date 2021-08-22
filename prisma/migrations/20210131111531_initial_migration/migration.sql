@@ -29,6 +29,7 @@ CREATE TABLE "questions" (
     "id" SERIAL NOT NULL,
     "default_url" TEXT NOT NULL,
     "standard_id" INTEGER NOT NULL,
+    "category" TEXT NOT NULL,
     "body" TEXT NOT NULL,
     "type" "question_type" NOT NULL,
     "archived" BOOLEAN DEFAULT false,

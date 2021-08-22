@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, ButtonGroup, Modal } from 'rsuite';
+import { Panel, PanelGroup } from 'rsuite';
 
 import {
   UrlsTable,
@@ -150,15 +151,23 @@ function Manage({ session, host, toggleTheme }) {
                 Add new health board
               </Button>
               <Button
-                id="addNewHospital"
+                id="addNewHealthBoardUser"
                 appearance="ghost"
-                onClick={() => setAddNewEntityModalType('hospital')}>
-                Add new hospital
+                onClick={() =>
+                  setAddNewUserModalUserType(Roles.USER_TYPE_HEALTH_BOARD)
+                }>
+                Add new health board user
               </Button>
             </ButtonGroup>
           </p>
 
-          <p>
+          {/* <p>
+           <Panel header="Panel title" bordered>
+              <Paragraph />
+           </Panel>
+          </p> */}
+
+          {/* <p>
             <ButtonGroup justified>
               <Button
                 id="addNewHealthBoardUser"
@@ -177,7 +186,7 @@ function Manage({ session, host, toggleTheme }) {
                 Add new hospital user
               </Button>
             </ButtonGroup>
-          </p>
+          </p> */}
 
           <p>
             <ButtonGroup justified>
