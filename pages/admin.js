@@ -39,21 +39,18 @@ function Manage({ session, toggleTheme }) {
       <Header session={session} toggleTheme={toggleTheme} />
       {session.user.roles.includes(Roles.USER_TYPE_ADMIN) ? (
         <div>
-          <h3>
-            Manage and add new questions
-            <QuestionsTable />
-            {/* <Button  
-        id="addNewQuestion"
-        float="right"
-        appearance="primary"
-        onClick={() => {
-          setDialogText(null);
-          setShowNewQuestionDialog(true);
-        }}>  
-        <div>Add new question</div>
-      </Button> */}
-          </h3>
-          <p>
+          <h3>Manage and add new questions</h3>
+          <QuestionsTable />
+        </div>
+      ) : (
+        <NoAccess />
+      )}
+    </div>
+  );
+}
+
+{
+  /* <p>
             <Panel header="Category A " bordered>
               <table>
                 <tr>
@@ -108,9 +105,11 @@ function Manage({ session, toggleTheme }) {
                 </tr>
               </table>
             </Panel>
-          </p>
+          </p> */
+}
 
-          {/* <p>
+{
+  /* <p>
              <Panel header="Category " bordered>
           </Panel>
           </p>
@@ -118,52 +117,7 @@ function Manage({ session, toggleTheme }) {
              <Panel header="Category" bordered>
              <QuestionsTable />
           </Panel>
-          </p> */}
-
-          {/* <Panel header="User List" bordered bodyFill>
-    <Table height={400} data={tableData}>
-      <Column width={70} align="center" fixed>
-        <HeaderCell>Id</HeaderCell>
-        <Cell dataKey="id" />
-      </Column>
-
-      <Column width={200} fixed>
-        <HeaderCell>First Name</HeaderCell>
-        <Cell dataKey="firstName" />
-      </Column>
-
-      <Column width={200}>
-        <HeaderCell>Last Name</HeaderCell>
-        <Cell dataKey="lastName" />
-      </Column>
-
-      <Column width={200}>
-        <HeaderCell>City</HeaderCell>
-        <Cell dataKey="city" />
-      </Column>
-
-      <Column width={200}>
-        <HeaderCell>Street</HeaderCell>
-        <Cell dataKey="street" />
-      </Column>
-
-      <Column width={300}>
-        <HeaderCell>Company Name</HeaderCell>
-        <Cell dataKey="companyName" />
-      </Column>
-
-      <Column width={300}>
-        <HeaderCell>Email</HeaderCell>
-        <Cell dataKey="email" />
-      </Column>
-    </Table>
-  </Panel> */}
-        </div>
-      ) : (
-        <NoAccess />
-      )}
-    </div>
-  );
+          </p> */
 }
 
 Manage.propTypes = {

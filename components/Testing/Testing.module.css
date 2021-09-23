@@ -1,0 +1,30 @@
+.input {
+  border: 1px solid black;
+  width: 100%;
+}
+
+.buttons {
+  float: right;
+}
+
+.header {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.alertText {
+  color: red;
+}
+
+.actionButtons {
+  margin: auto;
+}
+
+.actionButtons button {
+  margin-top: 2px;
+}
+
+.actionButtons > * {
+  display: inline;
+  margin-left: 5px;
+}

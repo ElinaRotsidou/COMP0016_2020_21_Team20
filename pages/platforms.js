@@ -3,7 +3,9 @@ import Head from 'next/head';
 import PropTypes from 'prop-types';
 import { Panel, PanelGroup, Table, Button } from 'rsuite';
 
-import { Header, LoginMessage, QuestionsTable, NoAccess } from '../components';
+import { Header, LoginMessage, NoAccess } from '../components';
+
+import Testing from '/Users/elinarotsidou/Documents/GitHub/COMP0016_2020_21_Team20/components/Testing/Testing';
 
 import { Roles } from '../lib/constants';
 
@@ -21,6 +23,11 @@ function Manage({ session, toggleTheme }) {
     );
   }
 
+  // function addCode() {
+  //    document.getElementById("add_to_me").innerHTML +=
+  //    "<h3>This is the text which has been inserted by JS</h3>";
+  // };
+
   return (
     <div>
       <Head>
@@ -32,18 +39,16 @@ function Manage({ session, toggleTheme }) {
         <div>
           <h3>
             Manage Platforms
-            {/* <QuestionsTable /> */}
-            {/* <Button  
-        id="addNewQuestion"
+            <Testing />
+          </h3>
+          {/* <Button  
         float="right"
         appearance="primary"
-        onClick={() => {
-          setDialogText(null);
-          setShowNewQuestionDialog(true);
-        }}>  
+        onClick={() => document.getElementById("add_to_me").innerHTML += 
+              "<h3>This is the text which has been inserted by JS</h3>"}
+        >  
         <div>Add new question</div>
       </Button> */}
-          </h3>
         </div>
       ) : (
         <NoAccess />

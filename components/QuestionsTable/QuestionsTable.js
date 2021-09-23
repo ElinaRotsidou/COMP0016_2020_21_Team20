@@ -14,95 +14,79 @@ import styles from './QuestionsTable.module.css';
 
 import { AlertDialog, CustomTable } from '../';
 import useSWR from '../../lib/swr';
+import { platform } from 'chart.js';
 
-// const columns = [
-//   {
-//     id: 'question',
-//     label: 'Question body',
-//     width: '40%',
-//     render: (edited, row, host, i) => {
-//       if (edited) {
-//         // If this question is being edited then it needs to be an input box
-//         // Copy all the info about the row being currently edited
-//         const buffer = {};
-//         Object.assign(buffer, row);
-//         editedRow = buffer;
-//         return (
-//           <Input
-//             id={'questionInput' + i}
-//             className={styles.input}
-//             key={row.standards.name}
-//             defaultValue={row.body}
-//             onChange={value => (editedRow.body = value)}
-//           />
-//         );
-//       } else {
-//         // Else just display body
-//         return <div id={'question' + i}>{row.body}</div>;
-//       }
-//     },
-//   },
-//   {
-//     id: 'standard',
-//     label: 'Standard',
-//     width: 'auto',
-//     render: (edited, row) => row.standards.name,
-//   },
-//   {
-//     id: 'category',
-//     label: 'Category',
-//     width: 'auto',
-//     render: (edited, row) => row.category,
-//   },
-//   {
-//     id: 'url',
-//     label: 'Training URL',
-//     width: 'auto',
-//     render: (edited, row) => {
-//       if (edited) {
-//         // If this url is being edited then it needs to be an input box
-//         // Copy all the info about the row being currently edited
-//         const buffer = {};
-//         Object.assign(buffer, row);
-//         editedRow = buffer;
-//         return (
-//           <Input
-//             className={styles.input}
-//             key={row.standards.name}
-//             defaultValue={row.url}
-//             onChange={value => (editedRow.url = value)}
-//           />
-//         );
-//       } else {
-//         // Else just display URL as link
-//         return (
-//           <a href={row.url} target="_blank" rel="noopener noreferrer">
-//             {row.url}
-//           </a>
-//         );
-//       }
-//     },
-//   },
-//   { id: 'actions', label: 'Actions', width: 'auto' },
+const columns = [
+  {
+    id: 'question',
+    label: 'Question body',
+    width: '40%',
+    render: (edited, row, host, i) => {
+      if (edited) {
+        // If this question is being edited then it needs to be an input box
+        // Copy all the info about the row being currently edited
+        const buffer = {};
+        Object.assign(buffer, row);
+        editedRow = buffer;
+        return (
+          <Input
+            id={'questionInput' + i}
+            className={styles.input}
+            key={row.categories.name}
+            defaultValue={row.body}
+            onChange={value => (editedRow.body = value)}
+          />
+        );
+      } else {
+        // Else just display body
+        return <div id={'question' + i}>{row.body}</div>;
+      }
+    },
+  },
+  {
+    id: 'category',
+    label: 'Category',
+    width: 'auto',
+    render: (edited, row) => row.categories.name,
+  },
+  // {
+  //   id: 'url',
+  //   label: 'Training URL',
+  //   width: 'auto',
+  //   render: (edited, row) => {
+  //     if (edited) {
 
-//   <Panel header="Panel title" bordered>
-//     {/* <Paragraph /> */}
-//   </Panel>
-// ];
+  //       // If this url is being edited then it needs to be an input box
+  //       // Copy all the info about the row being currently edited
 
-// const instance = (
-//   <Panel header="Panel title" bordered>
-//     {/* <Paragraph /> */}
-//   </Panel>
-// );
+  //       const buffer = {};
+  //       Object.assign(buffer, row);
+  //       editedRow = buffer;
+  //       return (
+  //         <Input
+  //           className={styles.input}
+  //           key={row.categories.name}
+  //           defaultValue={row.url}
+  //           onChange={value => (editedRow.url = value)}
+  //         />
+  //       );
+  //     } else {
+  // Else just display URL as link
+  //       return (
+  //         <a href={row.url} target="_blank" rel="noopener noreferrer">
+  //           {row.url}
+  //         </a>
+  //       );
+  //     }
+  //   },
+  // },
+  { id: 'actions', label: 'Actions', width: 'auto' },
+];
 
 const useQuestions = () => {
   const { data, error } = useSWR('/api/questions?default_urls=1');
 
   if (data) {
-    console.log(data);
-    console.log('maria');
-
     return {
       data: data ? data.likert_scale : [],
       error: error || data.error,
@@ -113,20 +97,22 @@ const useQuestions = () => {
   return { data: null, error: error, message: error ? error.message : null };
 };
 
-const useStandards = () => {
-  const { data, error } = useSWR('/api/standards');
+// const useStandards = () => {
+//   const { data, error } = useSWR('/api/standards');
 
-  if (data) {
-    return { data: data, error: error || data.error, message: data.message };
-  }
+//   if (data) {
+//     return { data: data, error: error || data.error, message: data.message };
+//   }
 
-  return { data: null, error: error, message: error ? error.message : null };
-};
+//   return { data: null, error: error, message: error ? error.message : null };
+// };
 
 var editedRow = null;
 export default function QuestionsTable() {
   const [editing, setEditing] = useState(false);
   const [showNewQuestionDialog, setShowNewQuestionDialog] = useState(false);
+  const [showNewPlatformDialog, setShowNewPlatformDialog] = useState(false);
+  const [showNewCategoryDialog, setShowNewCategoryDialog] = useState(false);
   const [dialogText, setDialogText] = useState(null);
 
   const {
@@ -135,13 +121,13 @@ export default function QuestionsTable() {
     message: questionsMessage,
   } = useQuestions();
 
-  const {
-    data: standards,
-    error: standardsError,
-    message: standardsMessage,
-  } = useStandards();
+  // const {
+  //   data: standards,
+  //   error: standardsError,
+  //   message: standardsMessage,
+  // } = useStandards();
 
-  var newRow = { body: null, url: null, standard: -1, type: 'likert_scale' };
+  var newRow = { body: null, type: 'likert_scale', categories: null };
 
   if (questionsError) {
     Alert.error(
@@ -150,18 +136,21 @@ export default function QuestionsTable() {
     );
   }
 
-  if (standardsError) {
-    Alert.error(
-      `Error: ${standardsMessage}. Please reload/try again later or the contact system administrator`,
-      0
-    );
-  }
+  // if (standardsError) {
+  //   Alert.error(
+  //     `Error: ${standardsMessage}. Please reload/try again later or the contact system administrator`,
+  //     0
+  //   );
+  // }
 
   const updateQuestion = async () => {
+    console.log('dame' + editedRow);
+    console.log(editedRow);
+
     const res = await fetch('/api/questions/' + editedRow.id, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ body: editedRow.body, url: editedRow.url }),
+      body: JSON.stringify({ body: editedRow.body }),
     }).then(res => res.json());
 
     if (res.error) {
@@ -169,7 +158,7 @@ export default function QuestionsTable() {
     } else {
       setEditing(null);
       // Refetch to ensure no stale data
-      mutate('/api/questions?default_urls=1');
+      // mutate('/api/questions?default_urls=1');
       Alert.success('Question successfully updated', 3000);
     }
   };
@@ -184,13 +173,13 @@ export default function QuestionsTable() {
       Alert.error(res.message, 0);
     } else {
       // Refetch to ensure no stale data
-      mutate('/api/questions?default_urls=1');
+      // mutate('/api/questions?default_urls=1');
       Alert.success('Question successfully deleted', 3000);
     }
   };
 
   const addNewQuestion = async () => {
-    if (!newRow.body || newRow.standard === -1 || !newRow.url) {
+    if (!newRow.body || !newRow.categories) {
       setDialogText(
         <div className={styles.alertText}>*Please fill in each field</div>
       );
@@ -200,9 +189,8 @@ export default function QuestionsTable() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           body: newRow.body,
-          url: newRow.url,
-          standard: newRow.standard,
           type: newRow.type,
+          categories: newRow.categories,
         }),
       }).then(res => res.json());
 
@@ -210,7 +198,63 @@ export default function QuestionsTable() {
         Alert.error(res.message, 0);
       } else {
         setShowNewQuestionDialog(false);
-        newRow = { body: null, url: null, standard: -1, type: 'likert_scale' };
+        newRow = { body: null, type: 'likert_scale', categories: null };
+
+        // Refetch to ensure no stale data
+        mutate('/api/questions?default_urls=1');
+        Alert.success('New question successfully added', 3000);
+      }
+    }
+  };
+
+  const addNewPlatform = async () => {
+    if (!newRow.name) {
+      Alert.success('hi');
+      // setDialogText(
+      //   <div className={styles.alertText}>*Please fill in each field</div>
+      // );
+    } else {
+      const res = await fetch('/api/platforms/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newRow.name,
+        }),
+      }).then(res => res.json());
+
+      if (res.error) {
+        Alert.error(res.message, 0);
+      } else {
+        setShowNewPlatformDialog(false);
+        newRow = { name: null };
+
+        // Refetch to ensure no stale data
+        mutate('/api/questions?default_urls=1');
+        Alert.success('New question successfully added', 3000);
+      }
+    }
+  };
+
+  const addNewCategory = async () => {
+    if (!newRow.name || !newRow.platform) {
+      setDialogText(
+        <div className={styles.alertText}>*Please fill in each field</div>
+      );
+    } else {
+      const res = await fetch('/api/categories/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newRow.name,
+          platform: newRow.platform,
+        }),
+      }).then(res => res.json());
+
+      if (res.error) {
+        Alert.error(res.message, 0);
+      } else {
+        setShowNewCategoryDialog(false);
+        newRow = { name: null };
 
         // Refetch to ensure no stale data
         mutate('/api/questions?default_urls=1');
@@ -274,23 +318,27 @@ export default function QuestionsTable() {
 
   return (
     <div>
-      {standards && !standardsError && (
-        <AlertDialog
-          open={showNewQuestionDialog}
-          setOpen={setShowNewQuestionDialog}
-          title="Please fill in the information of the new question:"
-          text={dialogText}
-          content={[
-            <div key="alertdialog-new-question">
-              <label>Body:</label>
-              <Input
-                id="bodyText"
-                className={styles.input}
-                onChange={value => (newRow.body = value)}
-              />
-              <label>Standard:</label>
+      <AlertDialog
+        open={showNewQuestionDialog}
+        setOpen={setShowNewQuestionDialog}
+        title="Please fill in the information of the new question:"
+        text={dialogText}
+        content={[
+          <div key="alertdialog-new-question">
+            <label>Body:</label>
+            <Input
+              id="bodyText"
+              className={styles.input}
+              onChange={value => (newRow.body = value)}
+            />
+            {/* <label>Standard:</label>
               <br />
-              <SelectPicker
+              <Input
+                id="StandardText"
+                className={styles.input}
+                onChange={value => (newRow.standard = value)}
+              /> */}
+            {/* <SelectPicker
                 defaultValue={newRow.standard}
                 onChange={value => (newRow.standard = value)}
                 placeholder={<text id="chooseStandard">Choose Standard</text>}
@@ -300,34 +348,114 @@ export default function QuestionsTable() {
                   ),
                   value: standard.id,
                 }))}
-              />
-              <br />
-              <label>Url:</label>
+              /> */}
+            <br />
+            {/* <label>Url:</label>
               <br />
               <Input
                 id="urlText"
                 className={styles.input}
                 onChange={value => (newRow.url = value)}
               />
-            </div>,
-          ]}
-          actions={[
-            <Button
-              key="alertdialog-edit"
-              color="red"
-              onClick={() => setShowNewQuestionDialog(false)}>
-              Cancel
-            </Button>,
-            <Button
-              id="addQuestion"
-              key="alertdialog-confirm"
-              onClick={() => addNewQuestion()}
-              appearance="primary">
-              Add
-            </Button>,
-          ]}
-        />
-      )}
+              <br /> */}
+
+            <label>Category:</label>
+            <br />
+            <Input
+              id="categoriesText"
+              className={styles.input}
+              onChange={value => (newRow.categories = value)}
+            />
+            <br />
+          </div>,
+        ]}
+        actions={[
+          <Button
+            key="alertdialog-edit"
+            color="red"
+            onClick={() => setShowNewQuestionDialog(false)}>
+            Cancel
+          </Button>,
+          <Button
+            id="addQuestion"
+            key="alertdialog-confirm"
+            onClick={() => addNewQuestion()}
+            appearance="primary">
+            Add
+          </Button>,
+        ]}
+      />
+
+      <AlertDialog
+        open={showNewPlatformDialog}
+        setOpen={setShowNewPlatformDialog}
+        title="Please fill in the information of the new question:"
+        text={dialogText}
+        content={[
+          <div key="alertdialog-new-platform">
+            <label>Name:</label>
+            <Input
+              id="bodyText"
+              className={styles.input}
+              onChange={value => (newRow.name = value)}
+            />
+          </div>,
+        ]}
+        actions={[
+          <Button
+            key="alertdialog-edit"
+            color="red"
+            onClick={() => setShowNewPlatformDialog(false)}>
+            Cancel
+          </Button>,
+          <Button
+            id="addPlatform"
+            key="alertdialog-confirm"
+            onClick={() => addNewPlatform()}
+            appearance="primary">
+            Add
+          </Button>,
+        ]}
+      />
+
+      <AlertDialog
+        open={showNewCategoryDialog}
+        setOpen={setShowNewCategoryDialog}
+        title="Please fill in the information of the new question:"
+        text={dialogText}
+        content={[
+          <div key="alertdialog-new-category">
+            <label>Name:</label>
+            <Input
+              id="bodyText"
+              className={styles.input}
+              onChange={value => (newRow.name = value)}
+            />
+            <label>Platform:</label>
+            <br />
+            <Input
+              id="platformText"
+              className={styles.input}
+              onChange={value => (newRow.platform = value)}
+            />
+          </div>,
+        ]}
+        actions={[
+          <Button
+            key="alertdialog-edit"
+            color="red"
+            onClick={() => setShowNewCategoryDialog(false)}>
+            Cancel
+          </Button>,
+          <Button
+            id="addCategory"
+            key="alertdialog-confirm"
+            onClick={() => addNewCategory()}
+            appearance="primary">
+            Add
+          </Button>,
+        ]}
+      />
 
       <Button
         id="addNewQuestion"
@@ -339,13 +467,33 @@ export default function QuestionsTable() {
         }}>
         <div>Add new question</div>
       </Button>
+      <Button
+        id="addNewPlatform"
+        className={styles.buttons}
+        appearance="primary"
+        onClick={() => {
+          setDialogText(null);
+          setShowNewPlatformDialog(true);
+        }}>
+        <div>Add new Platform</div>
+      </Button>
+      <Button
+        id="addNewCategory"
+        className={styles.buttons}
+        appearance="primary"
+        onClick={() => {
+          setDialogText(null);
+          setShowNewCategoryDialog(true);
+        }}>
+        <div>Add new Category</div>
+      </Button>
 
-      {/* <CustomTable
+      <CustomTable
         data={questions}
         columns={columns}
         renderActionCells={renderActionCells}
         editing={editing}
-      /> */}
+      />
     </div>
   );
 }

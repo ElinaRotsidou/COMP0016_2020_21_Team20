@@ -122,24 +122,23 @@ const handler = async (req, res) => {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
         error: true,
-        message: 'You do not have permission to add new questions',
+        message: 'You do not have permission to add new category',
       });
     }
 
-    const { body, type, categories } = req.body;
-    if (!body || !type || !categories) {
+    const { name, platform } = req.body;
+    if (!name || !platform) {
       return res.status(422).json({
         error: true,
+        // need to change this
         message: 'The required question details are missing',
       });
     }
 
-    const record = await prisma.questions.create({
+    const record = await prisma.categories.create({
       data: {
-        body: body,
-        type: type,
-        category_id: Number(categories),
-        // platform_id: Number(platform),
+        name: name,
+        platform_id: Number(platform),
       },
     });
 
@@ -149,13 +148,12 @@ const handler = async (req, res) => {
   if (req.method === 'GET') {
     const queryParams = {
       id: true,
-      categories: true,
-      body: true,
-      type: true,
-      // platform_id: true,
+      name: true,
+      platform_id: true,
     };
 
     // Handle the `default_urls` override to always fetch the default URL
+
     // if (req.query.default_urls !== '1') {
     //   queryParams.question_urls = {
     //     select: { url: true },
@@ -163,7 +161,7 @@ const handler = async (req, res) => {
     //   };
     // }
 
-    const questions = await prisma.questions.findMany({
+    const categories = await prisma.categories.findMany({
       select: queryParams,
       where: { archived: false },
     });

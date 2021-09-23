@@ -102,9 +102,9 @@ import { Roles } from '../../../lib/constants';
  */
 const handler = async (req, res) => {
   const { session } = req;
-  const { questionId } = req.query;
+  const { platformId } = req.query;
 
-  if (isNaN(questionId)) {
+  if (isNaN(platformId)) {
     return res
       .status(422)
       .json({ error: true, message: 'Invalid question ID provided' });
@@ -118,13 +118,13 @@ const handler = async (req, res) => {
       });
     }
 
-    const { body } = req.body;
-    if (!body) {
-      return res.status(422).json({
-        error: true,
-        message: 'The required question details are missing',
-      });
-    }
+    // const { body, url } = req.body;
+    // if (!body && !url) {
+    //   return res.status(422).json({
+    //     error: true,
+    //     message: 'The required question details are missing',
+    //   });
+    // }
 
     // Note: we don't support changing the standard of a question (otherwise users will
     // answer the same question but scores will be recorded against different standards,
@@ -133,8 +133,8 @@ const handler = async (req, res) => {
     // if (url) fields.default_url = url;
     if (body) fields.body = body;
 
-    const response = await prisma.questions.update({
-      where: { id: +questionId },
+    const response = await prisma.platforms.update({
+      where: { id: +platformId },
       data: fields,
     });
 
@@ -149,9 +149,9 @@ const handler = async (req, res) => {
       });
     }
 
-    const response = await prisma.questions.update({
+    const response = await prisma.platforms.update({
       data: { archived: true },
-      where: { id: +questionId },
+      where: { id: +platformId },
     });
 
     return res.json(response);

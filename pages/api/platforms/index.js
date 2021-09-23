@@ -122,24 +122,24 @@ const handler = async (req, res) => {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
         error: true,
-        message: 'You do not have permission to add new questions',
+        message: 'You do not have permission to add new platform',
       });
     }
 
-    const { body, type, categories } = req.body;
-    if (!body || !type || !categories) {
+    const { name } = req.body;
+    if (!name) {
       return res.status(422).json({
         error: true,
+        // need to change this
         message: 'The required question details are missing',
       });
     }
 
-    const record = await prisma.questions.create({
+    const record = await prisma.platforms.create({
       data: {
-        body: body,
-        type: type,
-        category_id: Number(categories),
-        // platform_id: Number(platform),
+        user_id: session.user.id,
+        // ena kamei link to user id me jino pou en logged in
+        name: name,
       },
     });
 
@@ -149,37 +149,36 @@ const handler = async (req, res) => {
   if (req.method === 'GET') {
     const queryParams = {
       id: true,
-      categories: true,
-      body: true,
-      type: true,
-      // platform_id: true,
+      name: true,
+      user_id: true,
     };
 
     // Handle the `default_urls` override to always fetch the default URL
-    // if (req.query.default_urls !== '1') {
-    //   queryParams.question_urls = {
-    //     select: { url: true },
-    //     where: { department_id: session.departmentId },
-    //   };
-    // }
+    if (req.query.default_urls !== '1') {
+      queryParams.question_urls = {
+        select: { url: true },
+        where: { department_id: session.departmentId },
+      };
+    }
 
-    const questions = await prisma.questions.findMany({
+    const platforms = await prisma.platforms.findMany({
       select: queryParams,
       where: { archived: false },
+      // where: { archived: false, userid: session.user.id },
     });
 
     // Return an object with keys as question types, and values as arrays of questions with each type
     // e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
     const questionsToReturn = questions.reduce((result, question) => {
       // Only return a single URL: custom URL if it exists, else the default one
-      // if (question.question_urls && question.question_urls.length) {
-      //   question.url = question.question_urls[0].url;
-      // } else {
-      //   question.url = question.default_url;
-      // }
+      if (question.question_urls && question.question_urls.length) {
+        question.url = question.question_urls[0].url;
+      } else {
+        question.url = question.default_url;
+      }
 
-      // delete question.question_urls;
-      // delete question.default_url;
+      delete question.question_urls;
+      delete question.default_url;
 
       if (result[question.type]) {
         result[question.type].push(question);

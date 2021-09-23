@@ -9,17 +9,13 @@ datasource db {
 
 model questions {
   id            Int             @id @default(autoincrement())
-  default_url   String
-  standard_id   Int
   body          String
   type          question_type
   archived      Boolean?        @default(false)
-  standards     standards       @relation(fields: [standard_id], references: [id])
-  question_urls question_urls[]
-  platform_id   Int
   category_id   Int
-  categories    categories @relation(fields: [category_id], references: [id])
+  categories    categories     @relation(fields: [category_id], references: [id])
 }
+
 
 model responses {
   id                   Int         @id @default(autoincrement())
@@ -27,67 +23,44 @@ model responses {
   timestamp            DateTime
   platform_id          Int
   is_mentoring_session Boolean
-  platforms             platforms @relation(fields: [platform_id], references: [id])
+  platforms            platforms   @relation(fields: [platform_id], references: [id])
   users                users       @relation(fields: [user_id], references: [id])
-  scores               scores[]
-}
-
-model scores {
-  response_id Int
-  standard_id Int
-  score       Int
-  responses   responses @relation(fields: [response_id], references: [id])
-  standards   standards @relation(fields: [standard_id], references: [id])
-
-  @@id([response_id, standard_id])
-}
-
-model standards {
-  id        Int         @id @default(autoincrement())
-  name      String
-  questions questions[]
-  scores    scores[]
+  score                Int
 }
 
 model users {
   id        String      @id
   user_type user_type?  @default(unknown)
   responses responses[]
+  platforms platforms[]
+
 }
 
 model platforms{
-  id                    Int                    @id @default(autoincrement())
-  name                  String
-  archived              Boolean?               @default(false)
-  user_join_codes       user_join_codes?
-  question_urls         question_urls[]
-  responses             responses[]
-  categories            categories[]
+  id              Int                    @id @default(autoincrement())
+  name            String
+  user_id              String
+  archived        Boolean?               @default(false)
+  user_join_codes user_join_codes?
+  responses       responses[]
+  categories      categories[]
+  users                users       @relation(fields: [user_id], references: [id])
+
 }
 
-model question_urls {
-  question_id   Int
-  platform_id   Int
-  url           String
-  platforms     platforms @relation(fields: [platform_id], references: [id])
-  questions     questions   @relation(fields: [question_id], references: [id])
-
-  @@id([question_id, platform_id])
-}
 
 model user_join_codes {
-  platform_id   Int         @id
-  code          String
-  platforms    platforms @relation(fields: [platform_id], references: [id])
+  platform_id Int         @id
+  code        String
+  platforms   platforms @relation(fields: [platform_id], references: [id])
 }
 
 model categories {
-  id            Int         @id @default(autoincrement())
-  platform_id   Int        
-  type          String
-  questions     questions[]
-
-  platforms     platforms @relation(fields: [platform_id], references: [id])
+  id          Int         @id @default(autoincrement())
+  platform_id Int        
+  name        String
+  questions   questions[]
+  platforms   platforms @relation(fields: [platform_id], references: [id])
 }
 
 
