@@ -1,0 +1,25 @@
+---
+name: UserJoinCode
+route: /UserJoinCode
+menu: Manage
+---
+
+import { Playground, Props } from 'docz';
+import UserJoinCode from './UserJoinCode';
+import 'rsuite/dist/styles/rsuite-default.min.css';
+
+# UserJoinCode
+
+The `UserJoinCode` component displays a URL to deparment managers which they can give to their users to join their department. It
+also allows them to regenerate the URL in case of security issues and also copy the URL to their clipboard using buttons. (shows loading when
+the join code can't be/is being fetched from the backend)
+
+<Props of={UserJoinCode} />
+
+It is normally used in the manage page for the department user type.
+
+## Basic usage
+
+<Playground>
+  <UserJoinCode session={null} host="example.com" />
+</Playground>

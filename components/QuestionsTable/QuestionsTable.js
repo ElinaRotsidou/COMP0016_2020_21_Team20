@@ -32,7 +32,7 @@ const columns = [
           <Input
             id={'questionInput' + i}
             className={styles.input}
-            key={row.categories.name}
+            // key={row.categories.name}
             defaultValue={row.body}
             onChange={value => (editedRow.body = value)}
           />
@@ -43,12 +43,13 @@ const columns = [
       }
     },
   },
-  {
-    id: 'category',
-    label: 'Category',
-    width: 'auto',
-    render: (edited, row) => row.categories.name,
-  },
+  // {
+  //   id: 'category',
+  //   label: 'Category',
+  //   width: 'auto',
+  //   render: (edited, row) => row.categories.name,
+  // },
+
   // {
   //   id: 'url',
   //   label: 'Training URL',
@@ -144,9 +145,8 @@ export default function QuestionsTable() {
   // }
 
   const updateQuestion = async () => {
-    console.log('dame' + editedRow);
-    console.log(editedRow);
-
+    // console.log('dame' + editedRow);
+    // console.log(editedRow);
     const res = await fetch('/api/questions/' + editedRow.id, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -236,7 +236,7 @@ export default function QuestionsTable() {
   };
 
   const addNewCategory = async () => {
-    if (!newRow.name || !newRow.platform) {
+    if (!newRow.type || !newRow.platform) {
       setDialogText(
         <div className={styles.alertText}>*Please fill in each field</div>
       );
@@ -245,7 +245,7 @@ export default function QuestionsTable() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: newRow.name,
+          type: newRow.type,
           platform: newRow.platform,
         }),
       }).then(res => res.json());
@@ -254,7 +254,7 @@ export default function QuestionsTable() {
         Alert.error(res.message, 0);
       } else {
         setShowNewCategoryDialog(false);
-        newRow = { name: null };
+        newRow = { type: null };
 
         // Refetch to ensure no stale data
         mutate('/api/questions?default_urls=1');
@@ -309,7 +309,7 @@ export default function QuestionsTable() {
                 await deleteQuestion(row.id);
               }
             }}>
-            Delete
+            <Icon icon="trash" />
           </Button>
         </div>
       );
@@ -429,7 +429,7 @@ export default function QuestionsTable() {
             <Input
               id="bodyText"
               className={styles.input}
-              onChange={value => (newRow.name = value)}
+              onChange={value => (newRow.type = value)}
             />
             <label>Platform:</label>
             <br />
@@ -467,7 +467,7 @@ export default function QuestionsTable() {
         }}>
         <div>Add new question</div>
       </Button>
-      <Button
+      {/* <Button
         id="addNewPlatform"
         className={styles.buttons}
         appearance="primary"
@@ -486,7 +486,7 @@ export default function QuestionsTable() {
           setShowNewCategoryDialog(true);
         }}>
         <div>Add new Category</div>
-      </Button>
+      </Button> */}
 
       <CustomTable
         data={questions}

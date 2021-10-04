@@ -1,6 +1,7 @@
 import prisma, { categories } from '../../../lib/prisma';
 import { Roles } from '../../../lib/constants';
 import requiresAuth from '../../../lib/requiresAuthApiMiddleware';
+import createJoinCode from '../../../lib/createJoinCode';
 import { platform } from 'chart.js';
 
 /**
@@ -115,6 +116,7 @@ import { platform } from 'chart.js';
  *      500:
  *        $ref: '#/components/responses/internal_server_error'
  */
+
 const handler = async (req, res) => {
   const { session } = req;
 
@@ -122,7 +124,7 @@ const handler = async (req, res) => {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
         error: true,
-        message: 'You do not have permission to add new platform',
+        message: 'You do not have permission to add new questions',
       });
     }
 
@@ -130,16 +132,21 @@ const handler = async (req, res) => {
     if (!name) {
       return res.status(422).json({
         error: true,
-        // need to change this
         message: 'The required question details are missing',
       });
     }
 
     const record = await prisma.platforms.create({
       data: {
-        user_id: session.user.id,
-        // ena kamei link to user id me jino pou en logged in
+        user_id: session.user.userId,
         name: name,
+        user_join_codes: { create: { code: await createJoinCode() } },
+        admin_join_codes: { create: { code: await createJoinCode() } },
+      },
+
+      include: {
+        user_join_codes: { select: { code: true } },
+        admin_join_codes: { select: { code: true } },
       },
     });
 
@@ -151,47 +158,60 @@ const handler = async (req, res) => {
       id: true,
       name: true,
       user_id: true,
+      user_join_codes: true,
     };
 
     // Handle the `default_urls` override to always fetch the default URL
-    if (req.query.default_urls !== '1') {
-      queryParams.question_urls = {
-        select: { url: true },
-        where: { department_id: session.departmentId },
-      };
-    }
+    // if (req.query.default_urls !== '1') {
+    //   queryParams.question_urls = {
+    //     select: { url: true },
+    //     where: { department_id: session.departmentId },
+    //   };
+    // }
 
     const platforms = await prisma.platforms.findMany({
       select: queryParams,
-      where: { archived: false },
-      // where: { archived: false, userid: session.user.id },
+      where: { user_id: session.user.userId },
     });
 
-    // Return an object with keys as question types, and values as arrays of questions with each type
-    // e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
-    const questionsToReturn = questions.reduce((result, question) => {
-      // Only return a single URL: custom URL if it exists, else the default one
-      if (question.question_urls && question.question_urls.length) {
-        question.url = question.question_urls[0].url;
-      } else {
-        question.url = question.default_url;
-      }
-
-      delete question.question_urls;
-      delete question.default_url;
-
-      if (result[question.type]) {
-        result[question.type].push(question);
-      } else {
-        result[question.type] = [question];
-      }
-      return result;
-    }, {});
-
-    return res.json(questionsToReturn);
+    return res.json(
+      platforms.map(p => ({
+        name: p.name,
+        user_join_code: p.user_join_codes ? p.user_join_codes.code : '',
+      }))
+    );
   }
 
   res.status(405).json({ error: true, message: 'Method Not Allowed' });
 };
+
+// Return an object with keys as question types, and values as arrays of questions with each type
+// e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
+
+// const questionsToReturn = questions.reduce((result, question) => {
+
+// Only return a single URL: custom URL if it exists, else the default one
+// if (question.question_urls && question.question_urls.length) {
+//   question.url = question.question_urls[0].url;
+// } else {
+//   question.url = question.default_url;
+// }
+
+// delete question.question_urls;
+// delete question.default_url;
+
+//       if (result[question.type]) {
+//         result[question.type].push(question);
+//       } else {
+//         result[question.type] = [question];
+//       }
+//       return result;
+//     }, {});
+
+//     return res.json(questionsToReturn);
+//   }
+
+//   res.status(405).json({ error: true, message: 'Method Not Allowed' });
+// };
 
 export default requiresAuth(handler);

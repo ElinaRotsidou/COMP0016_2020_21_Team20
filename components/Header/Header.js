@@ -11,11 +11,16 @@ import { Roles } from '../../lib/constants';
 import { ProfileButton } from '..';
 
 const paths = {
-  [Roles.USER_TYPE_HEALTH_BOARD]: ['statistics'],
-  [Roles.USER_TYPE_HOSPITAL]: ['statistics', 'manage'],
-  [Roles.USER_TYPE_DEPARTMENT]: ['statistics', 'self-reporting', 'manage'],
-  [Roles.USER_TYPE_CLINICIAN]: ['statistics', 'self-reporting'],
-  [Roles.USER_TYPE_ADMIN]: ['admin', 'manage'],
+  [Roles.USER_TYPE_HEALTH_BOARD]: ['STATISTICS'],
+  [Roles.USER_TYPE_HOSPITAL]: ['STATISTICS', 'MANAGE'],
+  [Roles.USER_TYPE_DEPARTMENT]: ['STATISTICS', 'SELF-REPORTING', 'MANAGE'],
+  [Roles.USER_TYPE_CLINICIAN]: [
+    'STATISTICS',
+    'SELF-REPORTING',
+    'SELF-REPO-TEST',
+  ],
+  [Roles.USER_TYPE_USER]: ['STATISTICS', 'SELF-REPORTING', 'SELF-REPO-TEST'],
+  [Roles.USER_TYPE_ADMIN]: ['PLATFORMS', 'STATISTICS', 'MANAGE'],
 };
 
 function Header({ session, toggleTheme }) {
@@ -90,13 +95,8 @@ function Header({ session, toggleTheme }) {
                 'fullscreen=yes'
               )
             }>
-            help
+            HELP
           </Nav.Item>
-          <Link href="/platforms">
-            <Nav.Item onClick={() => <a href="/platforms" />}>
-              platforms
-            </Nav.Item>
-          </Link>
         </ul>
 
         {/* <div

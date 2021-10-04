@@ -6,10 +6,12 @@ import styles from './LikertScale.module.css';
 
 const options = {
   'Strongly Disagree (1)': 0,
-  'Disagree (2)': 1,
-  'Neutral (3)': 2,
-  'Agree (4)': 3,
-  'Strongly Agree (5)': 4,
+  'Somewhat Disagree (2)': 1,
+  'Disagree (3)': 2,
+  'Neutral (4)': 3,
+  'Agree (5)': 4,
+  'Somewhat Agree (6)': 5,
+  'Strongly Agree (7)': 6,
 };
 
 function LikertScale(props) {

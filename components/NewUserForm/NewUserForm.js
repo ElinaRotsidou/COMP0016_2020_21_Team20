@@ -45,27 +45,29 @@ export default function NewUserForm({ userType, onError, onSuccess }) {
    */
   const renderEntityFormGroup = () => {
     if (
+      userType !== Roles.USER_TYPE_USER &&
       userType !== Roles.USER_TYPE_HEALTH_BOARD &&
       userType !== Roles.USER_TYPE_HOSPITAL
+      // userType !== Roles.USER_TYPE_ADMIN
     ) {
       return <span />;
     }
 
-    const textToDisplay =
-      userType === Roles.USER_TYPE_HEALTH_BOARD ? 'Health Board' : 'Hospital';
-    const apiEndpoint =
-      userType === Roles.USER_TYPE_HEALTH_BOARD ? 'health_boards' : 'hospitals';
+    // const textToDisplay =
+    //   userType === Roles.USER_TYPE_ADMIN? 'Platform' : 'Platform';
+    // const apiEndpoint =
+    //   userType === Roles.USER_TYPE_ADMIN? 'platforms' : 'platforms';
 
     return (
       <FormGroup>
-        <ControlLabel>{textToDisplay}</ControlLabel>
+        <ControlLabel>Platform</ControlLabel>
         <FormControl
           value={entityId}
           name="id"
           cleanable={false}
           accepter={SelectPicker}
           onOpen={() =>
-            fetch(`/api/${apiEndpoint}`)
+            fetch(`/api/platforms`)
               .then(res => res.json())
               .then(res => setEntities(res))
           }

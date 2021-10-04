@@ -119,10 +119,10 @@ const handler = async (req, res) => {
         Roles.USER_TYPE_CLINICIAN,
       ].includes(userType)
     ) {
-      if (!entityId) {
+      if (entityId) {
         return res.status(422).json({
           error: true,
-          message: 'The required user details are missing',
+          message: 'The required userr details are missing',
         });
       }
     }

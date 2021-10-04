@@ -24,7 +24,7 @@ import { Roles } from '../../lib/constants';
  *        is_mentoring_session:
  *          type: boolean
  *          example: false
- *        departments:
+ *        platforms:
  *          type: object
  *          properties:
  *            id:
@@ -210,7 +210,7 @@ const handler = async (req, res) => {
       only_not_mentoring_session: onlyNotMentoringSession,
 
       user_id: userIdOverride,
-      department_id: departmentIdOverride,
+      platform_id: platformIdOverride,
       hospital_id: hospitalIdOverride,
     } = req.query;
 
@@ -227,12 +227,12 @@ const handler = async (req, res) => {
     }
 
     if (session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT)) {
-      if (!session.user.departmentId) {
+      if (!session.user.platformId) {
         return res.json({ responses: [], averages: {} });
       }
 
       filters.push({
-        departments: { id: { equals: session.user.departmentId } },
+        platforms: { id: { equals: session.user.platformId } },
       });
 
       if (userIdOverride && userIdOverride === session.user.userId) {
@@ -244,12 +244,12 @@ const handler = async (req, res) => {
       }
 
       filters.push({
-        departments: { hospital_id: { equals: session.user.hospitalId } },
+        platforms: { hospital_id: { equals: session.user.hospitalId } },
       });
 
-      if (departmentIdOverride) {
+      if (platformIdOverride) {
         filters.push({
-          departments: { id: { equals: +departmentIdOverride } },
+          platforms: { id: { equals: +platformIdOverride } },
         });
       }
     } else if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
@@ -258,7 +258,7 @@ const handler = async (req, res) => {
       }
 
       filters.push({
-        departments: {
+        platforms: {
           hospitals: {
             health_board_id: { equals: session.user.healthBoardId },
           },
@@ -267,7 +267,7 @@ const handler = async (req, res) => {
 
       if (hospitalIdOverride) {
         filters.push({
-          departments: { hospitals: { id: { equals: +hospitalIdOverride } } },
+          platforms: { hospitals: { id: { equals: +hospitalIdOverride } } },
         });
       }
     } else {
@@ -283,9 +283,9 @@ const handler = async (req, res) => {
       id: true,
       timestamp: true,
       is_mentoring_session: true,
-      departments: true,
-      words: true,
-      scores: { select: { standards: true, score: true } },
+      platforms: true,
+      // words: true,
+      score: true,
     };
 
     const orderBy = { timestamp: 'asc' };
@@ -298,50 +298,50 @@ const handler = async (req, res) => {
         })
       : await prisma.responses.findMany({ select, orderBy });
 
-    const scoresPerStandard = {};
-    responses.forEach(val =>
-      val.scores.forEach(score => {
-        if (scoresPerStandard[score.standards.name]) {
-          scoresPerStandard[score.standards.name].push(score.score);
-        } else {
-          scoresPerStandard[score.standards.name] = [score.score];
-        }
-      })
-    );
+    // const scoresPerStandard = {};
+    // responses.forEach(val =>
+    //   val.scores.forEach(score => {
+    //     if (scoresPerStandard[score.standards.name]) {
+    //       scoresPerStandard[score.standards.name].push(score.score);
+    //     } else {
+    //       scoresPerStandard[score.standards.name] = [score.score];
+    //     }
+    //   })
+    // );
 
-    const responseData = { responses, averages: {} };
-    Object.entries(scoresPerStandard).map(
-      ([standard, scores]) =>
-        (responseData.averages[standard] =
-          scores.reduce((acc, val) => acc + val, 0) / scores.length)
-    );
+    // const responseData = { responses, averages: {} };
+    // Object.entries(scoresPerStandard).map(
+    //   ([standard, scores]) =>
+    //     (responseData.averages[standard] =
+    //       scores.reduce((acc, val) => acc + val, 0) / scores.length)
+    // );
 
-    return res.json(responseData);
+    // return res.json(responseData);
   }
 
   if (req.method === 'POST') {
-    const scores = req.body.scores.map(scoreObj => {
+    const scores = req.body.responses.map(scoreObj => {
       return {
-        standards: { connect: { id: scoreObj.standardId } },
-        score: scoreObj.score,
+        // standards: { connect: { id: scoreObj.standardId } },
+        scores: scoreObj.score,
       };
     });
 
-    const words = req.body.words.map(word => {
-      return {
-        questions: { connect: { id: word.questionId } },
-        word: word.word.toLowerCase(),
-      };
-    });
+    // const words = req.body.words.map(word => {
+    //   return {
+    //     questions: { connect: { id: word.questionId } },
+    //     word: word.word.toLowerCase(),
+    //   };
+    // });
 
     const insertion = await prisma.responses.create({
       data: {
         users: { connect: { id: session.user.userId } },
         timestamp: new Date(),
-        departments: { connect: { id: session.user.departmentId } },
+        platforms: { connect: { id: session.user.platformId } },
         is_mentoring_session: req.body.is_mentoring_session,
-        scores: { create: scores },
-        words: { create: words },
+        score: req.body.score,
+        // words: { create: words },
       },
     });
 

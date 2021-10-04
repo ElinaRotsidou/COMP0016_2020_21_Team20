@@ -123,6 +123,8 @@ function Statistics({ session, toggleTheme }) {
     !session.user.roles.includes(Roles.USER_TYPE_CLINICIAN) &&
     !session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT) &&
     !session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD) &&
+    !session.user.roles.includes(Roles.USER_TYPE_ADMIN) &&
+    !session.user.roles.includes(Roles.USER_TYPE_USER) &&
     !session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)
   ) {
     return (

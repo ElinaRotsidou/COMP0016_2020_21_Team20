@@ -88,6 +88,8 @@ const options = {
         session.user.roles = [Roles.USER_TYPE_UNKNOWN];
 
       session.user.userId = profile.sub;
+      session.user.platformId = profile.platform_id;
+      // session.user.categoryId = profile.category_id;
       session.user.departmentId = profile.department_id;
       session.user.hospitalId = profile.hospital_id;
       session.user.healthBoardId = profile.health_board_id;

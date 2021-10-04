@@ -1,7 +1,7 @@
 import { getSession } from 'next-auth/client';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
-import { Panel, PanelGroup, Table, Button } from 'rsuite';
+import { Panel, PanelGroup, Table, Button, Icon } from 'rsuite';
 
 import { Header, LoginMessage, NoAccess } from '../components';
 
@@ -13,7 +13,7 @@ export async function getServerSideProps(context) {
   return { props: { session: await getSession(context) } };
 }
 
-function Manage({ session, toggleTheme }) {
+function ManagePlat({ session, toggleTheme }) {
   if (!session) {
     return (
       <div>
@@ -41,11 +41,17 @@ function Manage({ session, toggleTheme }) {
             Manage Platforms
             <Testing />
           </h3>
+          {/* <Button 
+          float="right"
+          appearance="primary"
+          onClick={() => Router.back()}>
+           <Icon icon="trash" />
+           </Button> */}
+
           {/* <Button  
         float="right"
         appearance="primary"
-        onClick={() => document.getElementById("add_to_me").innerHTML += 
-              "<h3>This is the text which has been inserted by JS</h3>"}
+        onClick={event =>  window.location.href='/admin'}
         >  
         <div>Add new question</div>
       </Button> */}
@@ -57,9 +63,9 @@ function Manage({ session, toggleTheme }) {
   );
 }
 
-Manage.propTypes = {
+ManagePlat.propTypes = {
   session: PropTypes.object.isRequired,
   toggleTheme: PropTypes.func.isRequired,
 };
 
-export default Manage;
+export default ManagePlat;

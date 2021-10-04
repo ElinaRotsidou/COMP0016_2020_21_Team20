@@ -264,7 +264,7 @@ function SelfReporting({ session, toggleTheme }) {
               question={question.body}
               questionId={question.id}
               questionNumber={i + 1}
-              questionCategory={question.categories.type}
+              questionUrl={question.url}
               onChange={score => (question.score = score)}
               showError={showErrors && typeof question.score === 'undefined'}
             />

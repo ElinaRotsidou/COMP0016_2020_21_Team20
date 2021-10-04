@@ -126,8 +126,8 @@ const handler = async (req, res) => {
       });
     }
 
-    const { name, platform } = req.body;
-    if (!name || !platform) {
+    const { type, platform } = req.body;
+    if (!type || !platform) {
       return res.status(422).json({
         error: true,
         // need to change this
@@ -137,7 +137,7 @@ const handler = async (req, res) => {
 
     const record = await prisma.categories.create({
       data: {
-        name: name,
+        type: type,
         platform_id: Number(platform),
       },
     });
@@ -148,7 +148,7 @@ const handler = async (req, res) => {
   if (req.method === 'GET') {
     const queryParams = {
       id: true,
-      name: true,
+      type: true,
       platform_id: true,
     };
 
@@ -163,34 +163,45 @@ const handler = async (req, res) => {
 
     const categories = await prisma.categories.findMany({
       select: queryParams,
-      where: { archived: false },
+      where: { platforms: { user_id: session.user.userId } },
+      // where: { platforms : {id: req.query.categoryID }}
     });
 
-    // Return an object with keys as question types, and values as arrays of questions with each type
-    // e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
-    const questionsToReturn = questions.reduce((result, question) => {
-      // Only return a single URL: custom URL if it exists, else the default one
-      // if (question.question_urls && question.question_urls.length) {
-      //   question.url = question.question_urls[0].url;
-      // } else {
-      //   question.url = question.default_url;
-      // }
-
-      // delete question.question_urls;
-      // delete question.default_url;
-
-      if (result[question.type]) {
-        result[question.type].push(question);
-      } else {
-        result[question.type] = [question];
-      }
-      return result;
-    }, {});
-
-    return res.json(questionsToReturn);
+    return res.json(
+      categories.map(c => ({
+        type: c.type,
+      }))
+    );
   }
 
   res.status(405).json({ error: true, message: 'Method Not Allowed' });
 };
+
+// Return an object with keys as question types, and values as arrays of questions with each type
+// e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
+// const questionsToReturn = questions.reduce((result, question) => {
+// Only return a single URL: custom URL if it exists, else the default one
+// if (question.question_urls && question.question_urls.length) {
+//   question.url = question.question_urls[0].url;
+// } else {
+//   question.url = question.default_url;
+// }
+
+// delete question.question_urls;
+// delete question.default_url;
+
+//       if (result[question.type]) {
+//         result[question.type].push(question);
+//       } else {
+//         result[question.type] = [question];
+//       }
+//       return result;
+//     }, {});
+
+//     return res.json(questionsToReturn);
+//   }
+
+//   res.status(405).json({ error: true, message: 'Method Not Allowed' });
+// };
 
 export default requiresAuth(handler);

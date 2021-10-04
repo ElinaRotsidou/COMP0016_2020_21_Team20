@@ -107,31 +107,32 @@ const handler = async (req, res) => {
   if (isNaN(categoryId)) {
     return res
       .status(422)
-      .json({ error: true, message: 'Invalid question ID provided' });
+      .json({ error: true, message: 'Invalid category ID provided' });
   }
 
   if (req.method === 'PUT') {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
         error: true,
-        message: 'You do not have permission to modify questions',
+        message: 'You do not have permission to modify categories',
       });
     }
 
-    // const { body, url } = req.body;
-    // if (!body && !url) {
-    //   return res.status(422).json({
-    //     error: true,
-    //     message: 'The required question details are missing',
-    //   });
-    // }
+    const { type, platform } = req.body;
+    if (!type && !platform) {
+      return res.status(422).json({
+        error: true,
+        message: 'The required category details are missing',
+      });
+    }
 
     // Note: we don't support changing the standard of a question (otherwise users will
     // answer the same question but scores will be recorded against different standards,
     // skewing the results)
     const fields = {};
     // if (url) fields.default_url = url;
-    if (body) fields.body = body;
+    if (type) fields.type = type;
+    if (platform) fields.platform = platform;
 
     const response = await prisma.categories.update({
       where: { id: +categoryId },
@@ -145,7 +146,7 @@ const handler = async (req, res) => {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
         error: true,
-        message: 'You do not have permission to delete questions',
+        message: 'You do not have permission to delete categories',
       });
     }
 

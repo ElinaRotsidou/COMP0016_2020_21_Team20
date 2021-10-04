@@ -144,19 +144,19 @@ function Manage({ session, host, toggleTheme }) {
 
           <p>
             <ButtonGroup justified>
-              <Button
+              {/* <Button
                 id="addNewHealthBoard"
                 appearance="ghost"
                 onClick={() => setAddNewEntityModalType('health board')}>
                 Add new health board
-              </Button>
+              </Button> */}
               <Button
                 id="addNewHealthBoardUser"
                 appearance="ghost"
                 onClick={() =>
-                  setAddNewUserModalUserType(Roles.USER_TYPE_HEALTH_BOARD)
+                  setAddNewUserModalUserType(Roles.USER_TYPE_USER)
                 }>
-                Add new health board user
+                Add new user
               </Button>
             </ButtonGroup>
           </p>

@@ -3,7 +3,9 @@ import Head from 'next/head';
 import PropTypes from 'prop-types';
 import { Panel, PanelGroup, Table, Button } from 'rsuite';
 
-import { Header, LoginMessage, QuestionsTable, NoAccess } from '../components';
+import { Header, LoginMessage, NoAccess } from '../components';
+
+import TestingCat from '/Users/elinarotsidou/Documents/GitHub/COMP0016_2020_21_Team20/components/TestingCat/TestingCat.js';
 
 import { Roles } from '../lib/constants';
 
@@ -11,16 +13,7 @@ export async function getServerSideProps(context) {
   return { props: { session: await getSession(context) } };
 }
 
-/**
- * The admin page allows administrators to manage and add new questions, via the QuestionsTable component.
- * If the user is not logged in, they are prompted to login.
- *
- * All other users do not have access to this page.
- *
- * @param session the user's session object to decide what to display
- * @param toggleTheme the global function to toggle the current theme
- */
-function Manage({ session, toggleTheme }) {
+function ManageCat({ session, toggleTheme }) {
   if (!session) {
     return (
       <div>
@@ -39,8 +32,17 @@ function Manage({ session, toggleTheme }) {
       <Header session={session} toggleTheme={toggleTheme} />
       {session.user.roles.includes(Roles.USER_TYPE_ADMIN) ? (
         <div>
-          <h3>Manage and add new questions</h3>
-          <QuestionsTable />
+          <h3>Manage Categories</h3>
+          <h4>
+            <TestingCat />
+          </h4>
+          {/* <Button  
+        float="right"
+        appearance="primary"
+        onClick={event =>  window.location.href='/admin'}
+        >  
+        <div>Add new question</div>
+      </Button> */}
         </div>
       ) : (
         <NoAccess />
@@ -49,9 +51,9 @@ function Manage({ session, toggleTheme }) {
   );
 }
 
-Manage.propTypes = {
+ManageCat.propTypes = {
   session: PropTypes.object.isRequired,
   toggleTheme: PropTypes.func.isRequired,
 };
 
-export default Manage;
+export default ManageCat;

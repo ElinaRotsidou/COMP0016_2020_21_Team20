@@ -107,31 +107,143 @@ const handler = async (req, res) => {
   if (isNaN(platformId)) {
     return res
       .status(422)
-      .json({ error: true, message: 'Invalid question ID provided' });
+      .json({ error: true, message: 'Invalid platform ID provided' });
+  }
+
+  if (req.method === 'GET') {
+    if (session.user.roles.includes(Roles.USER_TYPE_USER)) {
+      return res.status(403).json({
+        error: true,
+        message: 'You do not have permission to view individual departments',
+      });
+    }
+
+    const includes = {};
+    if (session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
+      if (+req.query.platformId !== session.user.platformId) {
+        return res.status(403).json({
+          error: true,
+          message:
+            'You do not have permission to view a department you do not belong to',
+        });
+      }
+      includes.user_join_codes = { select: { code: true } };
+      // } else if (session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
+      //   const isDepartmentInHospital = await prisma.departments.count({
+      //     where: {
+      //       AND: [
+      //         { id: { equals: +req.query.departmentId } },
+      //         { hospital_id: { equals: session.user.hospitalId } },
+      //       ],
+      //     },
+      //   });
+
+      //   if (!isDepartmentInHospital) {
+      //     return res.status(403).json({
+      //       error: true,
+      //       message:
+      //         'You do not have permission to view a department that is not in your hospital',
+      //     });
+      //   }
+      // } else if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
+      //   const isDepartmentInHealthBoard = await prisma.departments.count({
+      //     where: {
+      //       AND: [
+      //         { id: { equals: +req.query.departmentId } },
+      //         {
+      //           hospitals: {
+      //             health_board_id: { equals: session.user.healthBoardId },
+      //           },
+      //         },
+      //       ],
+      //     },
+      //   });
+
+      //   if (!isDepartmentInHealthBoard) {
+      //     return res.status(403).json({
+      //       error: true,
+      //       message:
+      //         'You do not have permission to view a department that is not in your health board',
+      //     });
+      //   }
+      // }
+
+      let platform;
+      if (Object.keys(includes).length) {
+        platform = await prisma.platforms.findFirst({
+          where: { id: +req.query.platformId },
+          include: includes,
+        });
+      } else {
+        platform = await prisma.platforms.findFirst({
+          where: { id: +req.query.platformId },
+        });
+      }
+      return res.json(platform);
+    }
+
+    // if (req.method === 'DELETE') {
+    //   if (!session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
+    //     return res.status(403).json({
+    //       error: true,
+    //       message: 'You do not have permission to delete departments',
+    //     });
+    //   }
+
+    //   const isDepartmentInHospital = await prisma.departments.count({
+    //     where: {
+    //       AND: [
+    //         { id: { equals: +req.query.departmentId } },
+    //         { hospital_id: { equals: session.user.hospitalId } },
+    //       ],
+    //     },
+    //   });
+
+    //   if (!isDepartmentInHospital) {
+    //     return res.status(403).json({
+    //       error: true,
+    //       message: 'You do not have permission to delete this department',
+    //     });
+    //   }
+
+    //   const responses = await Promise.all([
+    //     prisma.departments.update({
+    //       data: { archived: true },
+    //       where: { id: +req.query.departmentId },
+    //     }),
+    //     prisma.question_urls.deleteMany({
+    //       where: { department_id: { equals: +req.query.departmentId } },
+    //     }),
+    //   ]);
+
+    //   return res.json({ success: responses.every(r => !!r) });
+    // }
+
+    res.status(405).json({ error: true, message: 'Method Not Allowed' });
   }
 
   if (req.method === 'PUT') {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
         error: true,
-        message: 'You do not have permission to modify questions',
+        message: 'You do not have permission to modify platforms',
       });
     }
 
-    // const { body, url } = req.body;
-    // if (!body && !url) {
-    //   return res.status(422).json({
-    //     error: true,
-    //     message: 'The required question details are missing',
-    //   });
-    // }
+    const { name } = req.body;
+    if (!name) {
+      return res.status(422).json({
+        error: true,
+        message: 'The required platform details are missing',
+      });
+    }
 
     // Note: we don't support changing the standard of a question (otherwise users will
     // answer the same question but scores will be recorded against different standards,
     // skewing the results)
     const fields = {};
     // if (url) fields.default_url = url;
-    if (body) fields.body = body;
+    if (name) fields.name = name;
 
     const response = await prisma.platforms.update({
       where: { id: +platformId },
@@ -145,7 +257,7 @@ const handler = async (req, res) => {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
         error: true,
-        message: 'You do not have permission to delete questions',
+        message: 'You do not have permission to delete platforms',
       });
     }
 
