@@ -264,6 +264,8 @@ export default function QuestionsTable() {
   };
 
   const renderActionCells = (editing, row, i, host) => {
+    console.log('hi');
+    console.log(row);
     if (editing === i) {
       return (
         <div className={styles.actionButtons}>

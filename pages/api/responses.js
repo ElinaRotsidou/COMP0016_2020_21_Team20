@@ -24,7 +24,7 @@ import { Roles } from '../../lib/constants';
  *        is_mentoring_session:
  *          type: boolean
  *          example: false
- *        platforms:
+ *        departments:
  *          type: object
  *          properties:
  *            id:
@@ -211,7 +211,7 @@ const handler = async (req, res) => {
 
       user_id: userIdOverride,
       platform_id: platformIdOverride,
-      hospital_id: hospitalIdOverride,
+      // hospital_id: hospitalIdOverride,
     } = req.query;
 
     const filters = [];
@@ -238,39 +238,43 @@ const handler = async (req, res) => {
       if (userIdOverride && userIdOverride === session.user.userId) {
         filters.push({ user_id: { equals: session.user.userId } });
       }
-    } else if (session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
-      if (!session.user.hospitalId) {
-        return res.json({ responses: [], averages: {} });
-      }
+    }
+    // else if (session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
+    //   if (!session.user.hospitalId) {
+    //     return res.json({ responses: [], averages: {} });
+    //   }
 
-      filters.push({
-        platforms: { hospital_id: { equals: session.user.hospitalId } },
-      });
+    //   filters.push({
+    //     departments: { hospital_id: { equals: session.user.hospitalId } },
+    //   });
 
-      if (platformIdOverride) {
-        filters.push({
-          platforms: { id: { equals: +platformIdOverride } },
-        });
-      }
-    } else if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
-      if (!session.user.healthBoardId) {
-        return res.json({ responses: [], averages: {} });
-      }
+    //   if (departmentIdOverride) {
+    //     filters.push({
+    //       departments: { id: { equals: +departmentIdOverride } },
+    //     });
+    //   }
+    // }
 
-      filters.push({
-        platforms: {
-          hospitals: {
-            health_board_id: { equals: session.user.healthBoardId },
-          },
-        },
-      });
+    // else if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
+    //   if (!session.user.healthBoardId) {
+    //     return res.json({ responses: [], averages: {} });
+    //   }
 
-      if (hospitalIdOverride) {
-        filters.push({
-          platforms: { hospitals: { id: { equals: +hospitalIdOverride } } },
-        });
-      }
-    } else {
+    //   filters.push({
+    //     departments: {
+    //       hospitals: {
+    //         health_board_id: { equals: session.user.healthBoardId },
+    //       },
+    //     },
+    //   });
+
+    //   if (hospitalIdOverride) {
+    //     filters.push({
+    //       departments: { hospitals: { id: { equals: +hospitalIdOverride } } },
+    //     });
+    //   }
+    // }
+    else {
       if (!session.user.userId) {
         return res.json({ responses: [], averages: {} });
       }
@@ -284,8 +288,7 @@ const handler = async (req, res) => {
       timestamp: true,
       is_mentoring_session: true,
       platforms: true,
-      // words: true,
-      score: true,
+      scores: { score: true },
     };
 
     const orderBy = { timestamp: 'asc' };
@@ -298,41 +301,34 @@ const handler = async (req, res) => {
         })
       : await prisma.responses.findMany({ select, orderBy });
 
-    // const scoresPerStandard = {};
-    // responses.forEach(val =>
-    //   val.scores.forEach(score => {
-    //     if (scoresPerStandard[score.standards.name]) {
-    //       scoresPerStandard[score.standards.name].push(score.score);
-    //     } else {
-    //       scoresPerStandard[score.standards.name] = [score.score];
-    //     }
-    //   })
-    // );
+    const scoresPerStandard = {};
 
-    // const responseData = { responses, averages: {} };
-    // Object.entries(scoresPerStandard).map(
-    //   ([standard, scores]) =>
-    //     (responseData.averages[standard] =
-    //       scores.reduce((acc, val) => acc + val, 0) / scores.length)
-    // );
+    responses.forEach(val =>
+      val.scores.forEach(score => {
+        if (scoresPerStandard[score.standards.name]) {
+          scoresPerStandard[score.standards.name].push(score.score);
+        } else {
+          scoresPerStandard[score.standards.name] = [score.score];
+        }
+      })
+    );
 
-    // return res.json(responseData);
+    const responseData = { responses, averages: {} };
+    Object.entries(scoresPerStandard).map(
+      ([standard, scores]) =>
+        (responseData.averages[standard] =
+          scores.reduce((acc, val) => acc + val, 0) / scores.length)
+    );
+
+    return res.json(responseData);
   }
 
   if (req.method === 'POST') {
-    const scores = req.body.responses.map(scoreObj => {
+    const scores = req.body.scores.map(scoreObj => {
       return {
-        // standards: { connect: { id: scoreObj.standardId } },
-        scores: scoreObj.score,
+        score: scoreObj.score,
       };
     });
-
-    // const words = req.body.words.map(word => {
-    //   return {
-    //     questions: { connect: { id: word.questionId } },
-    //     word: word.word.toLowerCase(),
-    //   };
-    // });
 
     const insertion = await prisma.responses.create({
       data: {
@@ -340,8 +336,7 @@ const handler = async (req, res) => {
         timestamp: new Date(),
         platforms: { connect: { id: session.user.platformId } },
         is_mentoring_session: req.body.is_mentoring_session,
-        score: req.body.score,
-        // words: { create: words },
+        scores: { create: scores },
       },
     });
 

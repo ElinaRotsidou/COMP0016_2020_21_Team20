@@ -25,7 +25,7 @@ model responses {
   is_mentoring_session Boolean
   platforms            platforms   @relation(fields: [platform_id], references: [id])
   users                users       @relation(fields: [user_id], references: [id])
-  score                Int
+  scores               scores[]
 }
 
 model users {
@@ -42,7 +42,6 @@ model platforms{
   user_id              String
   archived        Boolean?               @default(false)
   user_join_codes user_join_codes?
-  admin_join_codes admin_join_codes?
   responses       responses[]
   categories      categories[]
   users                users       @relation(fields: [user_id], references: [id])
@@ -56,11 +55,6 @@ model user_join_codes {
   platforms   platforms @relation(fields: [platform_id], references: [id])
 }
 
-model admin_join_codes {
-  platform_id Int         @id
-  code        String
-  platforms   platforms @relation(fields: [platform_id], references: [id])
-}
 
 model categories {
   id          Int         @id @default(autoincrement())
@@ -70,6 +64,11 @@ model categories {
   platforms   platforms @relation(fields: [platform_id], references: [id])
 }
 
+model scores {
+  response_id Int       @id
+  score       Int
+  responses   responses @relation(fields: [response_id], references: [id])
+}
 
 enum question_type {
   likert_scale

@@ -34,7 +34,7 @@ function UserJoinCode({ session, host }) {
 
   const regenerateCode = async id => {
     const res = await fetch(
-      '/api/join_codes/' + Roles.USER_TYPE_DEPARTMENT + '/' + id,
+      '/api/join_codes/' + Roles.USER_TYPE_ADMIN + '/' + id,
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -57,7 +57,7 @@ function UserJoinCode({ session, host }) {
 
     return (
       <div className={styles.content}>
-        There was an error fetching your department&apos;s unique Join URL
+        There was an error fetching your platform&apos;s unique Join URL
       </div>
     );
   }

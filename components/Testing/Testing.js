@@ -137,7 +137,7 @@ export default function Testing(host) {
     } else {
       // Refetch to ensure no stale data
       mutate('/api/platforms');
-      Alert.success('Department successfully deleted', 3000);
+      Alert.success('Platform successfully deleted', 3000);
     }
   };
 
@@ -169,6 +169,8 @@ export default function Testing(host) {
   };
 
   const renderActionCells = (editing, row, i, host) => {
+    console.log('hi');
+    console.log(row);
     if (editing === i) {
       return (
         <div className={styles.actionButtons}>

@@ -39,7 +39,6 @@ const useQuestions = () => {
 
   return {
     likertScaleQuestions: data && data.likert_scale ? data.likert_scale : [],
-    // wordsQuestions: data && data.words ? data.words : [],
     isQuestionsLoading: !error && !data,
     questionsError: data ? data.error : error,
   };
@@ -67,7 +66,6 @@ function SelfReporting({ session, toggleTheme }) {
 
   const {
     likertScaleQuestions,
-    // wordsQuestions,
     isQuestionsLoading,
     questionsError,
   } = useQuestions();
@@ -85,14 +83,7 @@ function SelfReporting({ session, toggleTheme }) {
    * On error, an alert is displayed
    */
   const submitAnswers = async () => {
-    // const words = [];
-    // wordsQuestions.forEach(
-    //   q =>
-    //     q.words &&
-    //     q.words.forEach(w => w && words.push({ questionId: q.id, word: w }))
-    // );
-    const score = likertScaleQuestions.map(q => ({
-      // standardId: q.standards.id,
+    const scores = likertScaleQuestions.map(q => ({
       score: q.score,
     }));
 
@@ -101,8 +92,7 @@ function SelfReporting({ session, toggleTheme }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         is_mentoring_session: isMentoringSession === true,
-        score,
-        // words,
+        scores,
       }),
     }).then(res => res.status);
 

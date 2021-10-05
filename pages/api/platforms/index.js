@@ -171,11 +171,12 @@ const handler = async (req, res) => {
 
     const platforms = await prisma.platforms.findMany({
       select: queryParams,
-      where: { user_id: session.user.userId },
+      where: { user_id: session.user.userId, archived: false },
     });
 
     return res.json(
       platforms.map(p => ({
+        id: p.id,
         name: p.name,
         user_join_code: p.user_join_codes ? p.user_join_codes.code : '',
       }))

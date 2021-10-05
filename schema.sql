@@ -46,6 +46,7 @@ CREATE TABLE platforms (
     archived BOOLEAN DEFAULT FALSE
 );
 
+
 ALTER TABLE user_join_codes ADD FOREIGN KEY (platform_id) REFERENCES platforms(id);
 
 ALTER TABLE responses ADD FOREIGN KEY (user_id) REFERENCES users(id);
