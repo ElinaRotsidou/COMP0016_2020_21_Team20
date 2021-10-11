@@ -60,12 +60,14 @@ model categories {
   id          Int         @id @default(autoincrement())
   platform_id Int        
   type        String
+  archived        Boolean?               @default(false)
   questions   questions[]
   platforms   platforms @relation(fields: [platform_id], references: [id])
 }
 
 model scores {
-  response_id Int       @id
+  id          Int       @id @default(autoincrement())
+  response_id Int      
   score       Int
   responses   responses @relation(fields: [response_id], references: [id])
 }

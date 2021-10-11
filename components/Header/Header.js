@@ -14,12 +14,8 @@ const paths = {
   [Roles.USER_TYPE_HEALTH_BOARD]: ['STATISTICS'],
   [Roles.USER_TYPE_HOSPITAL]: ['STATISTICS', 'MANAGE'],
   [Roles.USER_TYPE_DEPARTMENT]: ['STATISTICS', 'SELF-REPORTING', 'MANAGE'],
-  [Roles.USER_TYPE_CLINICIAN]: [
-    'STATISTICS',
-    'SELF-REPORTING',
-    'SELF-REPO-TEST',
-  ],
-  [Roles.USER_TYPE_USER]: ['STATISTICS', 'SELF-REPORTING', 'SELF-REPO-TEST'],
+  [Roles.USER_TYPE_CLINICIAN]: ['STATISTICS', 'SELF-REPORTING'],
+  [Roles.USER_TYPE_USER]: ['STATISTICS', 'SELF-REPORTING'],
   [Roles.USER_TYPE_ADMIN]: ['PLATFORMS', 'STATISTICS', 'MANAGE'],
 };
 
@@ -85,7 +81,7 @@ function Header({ session, toggleTheme }) {
         ref={mobileMenuRef}
         className={`${styles.links} ${isOpen ? styles.open : ''}`}>
         {session && renderLinks()}
-        <ul className={styles.list}>
+        {/* <ul className={styles.list}>
           <Nav.Item
             onClick={() =>
               window &&
@@ -97,23 +93,7 @@ function Header({ session, toggleTheme }) {
             }>
             HELP
           </Nav.Item>
-        </ul>
-
-        {/* <div
-        ref={mobileMenuRef}
-        className={`${styles.links} ${isOpen ? styles.open : ''}`}>
-        {session && renderLinks()}
-        <ul className={styles.list}>
-          <Link href="/maria"> 
-          <Nav.Item
-            onClick={() =>
-             <a href="/maria"/> 
-            }>
-            maria
-          </Nav.Item>
-          </Link>
-        </ul>
-        </div> */}
+        </ul> */}
 
         <div className={styles.profile}>
           {session ? (

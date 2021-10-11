@@ -188,7 +188,7 @@ function Manage({ session, host, toggleTheme }) {
             </ButtonGroup>
           </p> */}
 
-          <p>
+          {/* <p>
             <ButtonGroup justified>
               <Button
                 id="addNewAdminUser"
@@ -199,7 +199,7 @@ function Manage({ session, host, toggleTheme }) {
                 Add new platform administrator
               </Button>
             </ButtonGroup>
-          </p>
+          </p> */}
         </div>
       );
     } else if (session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {

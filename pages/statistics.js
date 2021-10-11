@@ -46,6 +46,8 @@ const generateQueryParams = ({
     query[dataToDisplayOverride.key] = dataToDisplayOverride.value;
   }
 
+  console.log(querystring.stringify(query));
+
   return querystring.stringify(query);
 };
 
@@ -90,6 +92,9 @@ function Statistics({ session, toggleTheme }) {
     })}`
   );
 
+  console.log('error');
+  console.log(error);
+
   var localData, localError, localMessage;
   if (data) {
     localData = data;
@@ -100,6 +105,8 @@ function Statistics({ session, toggleTheme }) {
     localError = error;
     localMessage = error ? error.message : null;
   }
+
+  console.log(localData);
 
   if (localError) {
     Alert.error(
@@ -135,21 +142,22 @@ function Statistics({ session, toggleTheme }) {
     );
   }
 
-  const getAverage = name => {
-    const average = !localError && localData ? localData.averages[name] : null;
+  const getAverage = response_id => {
+    const average =
+      !localError && localData ? localData.averages[response_id] : null;
     return average ? Math.ceil(average * 25) : 0;
   };
 
-  const averageStats = Object.entries(Standards).map(
-    ([shortName, longName]) => {
-      return {
-        name: shortName[0].toUpperCase() + shortName.substr(1).toLowerCase(),
-        longName: longName[0].toUpperCase() + longName.substr(1).toLowerCase(),
-        color: StandardColors[longName],
-        percentage: getAverage(longName),
-      };
-    }
-  );
+  // const averageStats = Object.entries(Standards).map(
+  //   ([shortName, longName]) => {
+  //     return {
+  //       name: shortName[0].toUpperCase() + shortName.substr(1).toLowerCase(),
+  //       longName: longName[0].toUpperCase() + longName.substr(1).toLowerCase(),
+  //       color: StandardColors[longName],
+  //       percentage: getAverage(longName),
+  //     };
+  //   }
+  // );
 
   const dataToSend =
     !localError && localData
@@ -158,11 +166,14 @@ function Statistics({ session, toggleTheme }) {
           timestamp: d.timestamp,
           scores: d.scores.map(s => ({
             score: s.score,
-            standardName: s.standards.name,
-            color: StandardColors[s.standards.name],
+            // standardName: s.standards.name,
+            // color: StandardColors[s.standards.name],
           })),
         }))
       : null;
+
+  console.log('dataToSend');
+  console.log(dataToSend);
 
   return (
     <div>
@@ -173,13 +184,13 @@ function Statistics({ session, toggleTheme }) {
 
       <Header session={session} toggleTheme={toggleTheme} />
 
-      <CirclesAccordion circles={averageStats} />
+      {/* <CirclesAccordion circles={averageStats} /> */}
 
-      {((session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT) &&
+      {/* {((session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT) &&
         dataToDisplayOverride) ||
         session.user.roles.includes(Roles.USER_TYPE_CLINICIAN)) && (
         <AnalyticsAccordion data={dataToSend} stats={averageStats} />
-      )}
+      )} */}
 
       <div className={styles.content}>
         <div className={styles.filters}>

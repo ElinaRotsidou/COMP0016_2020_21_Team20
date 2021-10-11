@@ -13,7 +13,7 @@ export const getServerSideProps = async context => {
   const [type, joinCode] = params;
 
   if (
-    ![Roles.USER_TYPE_CLINICIAN, Roles.USER_TYPE_DEPARTMENT].includes(type) ||
+    ![Roles.USER_TYPE_USER, Roles.USER_TYPE_USER].includes(type) ||
     !joinCode
   ) {
     return { notFound: true };
@@ -27,16 +27,16 @@ export const getServerSideProps = async context => {
 
   console.log('Session', session ? session.user : undefined);
   const dbTable =
-    type === Roles.USER_TYPE_DEPARTMENT
-      ? prisma.department_join_codes
-      : prisma.clinician_join_codes;
+    type === Roles.USER_TYPE_USER
+      ? prisma.user_join_codes
+      : prisma.user_join_codes;
 
-  const department = await dbTable.findFirst({ where: { code: joinCode } });
+  const platform = await dbTable.findFirst({ where: { code: joinCode } });
 
-  if (!department) return { props: { invalidCode: true } };
+  if (!platform) return { props: { invalidCode: true } };
 
   const success = await setUserDepartmentAndRole({
-    departmentId: department.department_id,
+    platformId: platform.platform_id,
     userId: session.user.userId,
     newUserType: type,
   });
@@ -63,10 +63,10 @@ function Join({ session, ...props }) {
         <Message
           style={{ margin: 'auto', width: '50%', textAlign: 'center' }}
           type="success"
-          title="Successfully joined department"
+          title="Successfully joined platform"
           description={
             <p id="joinSuccess">
-              You have successfully joined the department!
+              You have successfully joined the platform!
               <br />
               <br />
               <Button
@@ -89,8 +89,8 @@ function Join({ session, ...props }) {
       {props.invalidCode &&
         'Your join code is invalid. Please ensure your code has not expired and is exactly as you were provided.'}
       {props.success === true &&
-        'You have successfully joined the department. You will be redirected in 5 seconds.'}
-      {props.success === false && 'There was an error joining the department.'}
+        'You have successfully joined the platform. You will be redirected in 5 seconds.'}
+      {props.success === false && 'There was an error joining the platform.'}
     </div>
   );
 }

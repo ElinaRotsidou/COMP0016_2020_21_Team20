@@ -139,16 +139,25 @@ function Home({ session, toggleTheme }) {
             <h1 className={styles.title}>Welcome to Care Quality Dashboard</h1>
             {!session && (
               <div className={styles.loginButton}>
-                <h2>Get started</h2>
+                <div className={styles.titleleft}>
+                  <h2>Get started</h2>
+                </div>
                 <p
-                  style={{ width: '60%', margin: 'auto', marginBottom: '5px' }}>
+                  style={{
+                    width: '60%',
+                    margin: 'auto',
+                    marginBottom: '5px',
+                    textAlign: 'left',
+                  }}>
                   If this is your first time using the Care Quality Dashboard,
                   please contact your department or hospital manager to obtain a
                   unique Join URL. This will automatically link your account to
                   your corresponding department or hospital, so you can start
                   completing self-reports and viewing your statistics.
                 </p>
+
                 <Button
+                  style={{ marginTop: '15px' }}
                   id="loginOrRegister"
                   appearance="primary"
                   onClick={() => signIn('keycloak')}>
@@ -168,7 +177,7 @@ function Home({ session, toggleTheme }) {
                   height={96}
                 />
 
-                <p>
+                <p style={{ textAlign: 'left' }}>
                   Complete your self-reporting on the device of your choice in a
                   matter of minutes. The self-reporting page is clear and simple
                   to use allowing you to efficiently report your recent
@@ -184,7 +193,7 @@ function Home({ session, toggleTheme }) {
                   width={96}
                   height={96}
                 />
-                <p>
+                <p style={{ textAlign: 'left' }}>
                   Track your self-reporting any time and on any device. The
                   statistics page gives you great flexibilty allowing you to
                   change data ranges and whether the submissions were a part of
@@ -200,7 +209,7 @@ function Home({ session, toggleTheme }) {
                   width={96}
                   height={96}
                 />
-                <p>
+                <p style={{ textAlign: 'left' }}>
                   Complete your self-reporting by yourself or as part of a
                   mentoring session. You and your managers can then use these
                   useful meaningful insights to spark conversaions on how you
@@ -220,9 +229,9 @@ function Home({ session, toggleTheme }) {
         <div className={styles.cube}></div>
       </div>
 
-      <div className={styles.iconInfo}>
+      {/* <div className={styles.iconInfo}>
         <a href="https://icons8.com">Icons by Icons8</a>
-      </div>
+      </div> */}
     </div>
   );
 }

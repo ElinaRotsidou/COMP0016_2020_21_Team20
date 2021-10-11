@@ -75,6 +75,13 @@
   width: 25vw;
 }
 
+.titleleft {
+  /* left: 25vw; */
+
+  margin-left: 34vh;
+  text-align: left;
+}
+
 .loginButton {
   margin-top: 5vh;
   margin-bottom: 5vh;

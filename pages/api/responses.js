@@ -202,6 +202,8 @@ import { Roles } from '../../lib/constants';
 const handler = async (req, res) => {
   const { session } = req;
 
+  // console.log(req.method);
+
   if (req.method === 'GET') {
     const {
       from,
@@ -226,7 +228,7 @@ const handler = async (req, res) => {
       filters.push({ is_mentoring_session: false });
     }
 
-    if (session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT)) {
+    if (session.user.roles.includes(Roles.USER_TYPE_USER)) {
       if (!session.user.platformId) {
         return res.json({ responses: [], averages: {} });
       }
@@ -238,6 +240,12 @@ const handler = async (req, res) => {
       if (userIdOverride && userIdOverride === session.user.userId) {
         filters.push({ user_id: { equals: session.user.userId } });
       }
+
+      if (platformIdOverride) {
+        filters.push({
+          platforms: { id: { equals: +platformIdOverride } },
+        });
+      }
     }
     // else if (session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
     //   if (!session.user.hospitalId) {
@@ -248,14 +256,7 @@ const handler = async (req, res) => {
     //     departments: { hospital_id: { equals: session.user.hospitalId } },
     //   });
 
-    //   if (departmentIdOverride) {
-    //     filters.push({
-    //       departments: { id: { equals: +departmentIdOverride } },
-    //     });
-    //   }
-    // }
-
-    // else if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
+    // } else if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
     //   if (!session.user.healthBoardId) {
     //     return res.json({ responses: [], averages: {} });
     //   }
@@ -282,6 +283,8 @@ const handler = async (req, res) => {
       // Default to lowest-level i.e. logged in user's data
       filters.push({ user_id: { equals: session.user.userId } });
     }
+    // console.log('filters');
+    // console.log(filters);
 
     const select = {
       id: true,
@@ -296,13 +299,12 @@ const handler = async (req, res) => {
     const responses = filters.length
       ? await prisma.responses.findMany({
           where: { AND: filters },
-          select,
+          select: { scores: true },
           orderBy,
         })
       : await prisma.responses.findMany({ select, orderBy });
 
     const scoresPerStandard = {};
-
     responses.forEach(val =>
       val.scores.forEach(score => {
         if (scoresPerStandard[score.standards.name]) {
@@ -330,11 +332,18 @@ const handler = async (req, res) => {
       };
     });
 
+    const platforms = await prisma.platforms.findMany({
+      where: { user_id: session.user.userId },
+    });
+
+    // console.log("platforms");
+    // console.log(platforms);
+
     const insertion = await prisma.responses.create({
       data: {
         users: { connect: { id: session.user.userId } },
         timestamp: new Date(),
-        platforms: { connect: { id: session.user.platformId } },
+        platforms: { connect: { id: platforms[0].id } },
         is_mentoring_session: req.body.is_mentoring_session,
         scores: { create: scores },
       },

@@ -19,7 +19,6 @@ CREATE TABLE responses (
     timestamp TIMESTAMPTZ NOT NULL,
     platform_id INTEGER NOT NULL,
     is_mentoring_session BOOLEAN NOT NULL,
-    score NOT NULL
 );
 
 CREATE TYPE question_type AS ENUM ('likert_scale');
@@ -37,6 +36,7 @@ CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     platform_id INTEGER NOT NULL,
+    archived BOOLEAN DEFAULT FALSE,
 );
 
 CREATE TABLE platforms (
@@ -44,6 +44,12 @@ CREATE TABLE platforms (
     user_id TEXT NOT NULL,
     name TEXT NOT NULL,
     archived BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE scores (
+    id SERIAL PRIMARY KEY,
+    response_id INTEGER NOT NULL,
+    score INTEGER NOT NULL,
 );
 
 

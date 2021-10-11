@@ -117,7 +117,8 @@ import { platform } from 'chart.js';
  */
 const handler = async (req, res) => {
   const { session } = req;
-
+  // console.log(req);
+  // console.log(req.query.id);
   if (req.method === 'POST') {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
@@ -126,11 +127,10 @@ const handler = async (req, res) => {
       });
     }
 
-    const { type, platform } = req.body;
-    if (!type || !platform) {
+    const { type, platforms } = req.body;
+    if (!type || !platforms) {
       return res.status(422).json({
         error: true,
-        // need to change this
         message: 'The required question details are missing',
       });
     }
@@ -138,7 +138,7 @@ const handler = async (req, res) => {
     const record = await prisma.categories.create({
       data: {
         type: type,
-        platform_id: Number(platform),
+        platform_id: Number(platforms),
       },
     });
 
@@ -149,7 +149,7 @@ const handler = async (req, res) => {
     const queryParams = {
       id: true,
       type: true,
-      platform_id: true,
+      platforms: true,
     };
 
     // Handle the `default_urls` override to always fetch the default URL
@@ -163,17 +163,17 @@ const handler = async (req, res) => {
 
     const categories = await prisma.categories.findMany({
       select: queryParams,
-      where: { platforms: { user_id: session.user.userId } },
-
-      // , archived:false
-
-      // where: { platforms : {id: req.query.categoryID }}
+      where: {
+        platforms: { user_id: session.user.userId },
+        platform_id: Number(req.query.id),
+      },
     });
 
     return res.json(
       categories.map(c => ({
         id: c.id,
         type: c.type,
+        platforms: c.platforms,
       }))
     );
   }

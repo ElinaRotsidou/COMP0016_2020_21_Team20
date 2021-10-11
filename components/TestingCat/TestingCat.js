@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   Button,
   Icon,
@@ -24,24 +25,23 @@ const columns = [
     label: 'Categories',
     width: '40%',
     render: (edited, row, host, i) => {
-      // if (edited) {
-      //   // If this question is being edited then it needs to be an input box
-      //   // Copy all the info about the row being currently edited
-      //   const buffer = {};
-      //   Object.assign(buffer, row);
-      //   editedRow = buffer;
-      //   return (
-      //     <Input
-      //       id={'questionInput' + i}
-      //       className={styles.input}
-      //       key={row.id.name}
-      //       defaultValue={row.name}
-      //       onChange={value => (editedRow.name = value)}
-      //     />
-      //   );
-      // } else {
-      // Else just display body
-      return <div id={'category' + i}>{row.type}</div>;
+      if (edited) {
+        // If this question is being edited then it needs to be an input box
+        // Copy all the info about the row being currently edited
+        const buffer = {};
+        Object.assign(buffer, row);
+        editedRow = buffer;
+        return (
+          <Input
+            id={'category' + i}
+            className={styles.input}
+            defaultValue={row.type}
+            onChange={value => (editedRow.type = value)}
+          />
+        );
+      } else {
+        return <div id={'category' + i}>{row.type}</div>;
+      }
     },
   },
 
@@ -49,7 +49,11 @@ const columns = [
 ];
 
 const useCategories = () => {
-  const { data, error } = useSWR('/api/categories?platform_id=ID');
+  const router = useRouter();
+  var platid = router.query.platform_id;
+  console.log(platid);
+
+  const { data, error } = useSWR('/api/categories?id=' + platid);
 
   if (data) {
     return { data: data, error: error || data.error, message: data.message };
@@ -58,6 +62,7 @@ const useCategories = () => {
 };
 
 var editedRow = null;
+
 export default function Testing() {
   const [editing, setEditing] = useState(false);
   const [showNewCategoryDialog, setShowNewCategoryDialog] = useState(false);
@@ -65,7 +70,7 @@ export default function Testing() {
 
   const { data: data, error: error, message: message } = useCategories();
 
-  var newRow = { type: null, platform: null };
+  var newRow = { type: null, platforms: null };
 
   if (error) {
     Alert.error(
@@ -74,28 +79,25 @@ export default function Testing() {
     );
   }
 
-  // const updateQuestion = async () => {
-  //   console.log('dame' + editedRow);
-  //   console.log(editedRow);
+  const updateCategory = async () => {
+    const res = await fetch('/api/categories/' + editedRow.id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: editedRow.type }),
+    }).then(res => res.json());
 
-  //   const res = await fetch('/api/platforms/' + editedRow.id, {
-  //     method: 'PUT',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ name: editedRow.name }),
-  //   }).then(res => res.json());
-
-  //   if (res.error) {
-  //     Alert.error(res.message, 0);
-  //   } else {
-  //     setEditing(null);
-  //     // Refetch to ensure no stale data
-  //     // mutate('/api/questions?default_urls=1');
-  //     Alert.success('Question successfully updated', 3000);
-  //   }
-  // };
+    if (res.error) {
+      Alert.error(res.message, 0);
+    } else {
+      setEditing(null);
+      // Refetch to ensure no stale data
+      mutate('/api/categories');
+      Alert.success('Question successfully updated', 3000);
+    }
+  };
 
   const deleteCategory = async id => {
-    const res = await fetch('/api/categories/?platform_id=ID' + id, {
+    const res = await fetch('/api/categories' + id, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     }).then(res => res.json());
@@ -104,23 +106,23 @@ export default function Testing() {
       Alert.error(res.message, 0);
     } else {
       // Refetch to ensure no stale data
-      // mutate('/api/questions?default_urls=1');
-      Alert.success('Question successfully deleted', 3000);
+      mutate('/api/categories');
+      Alert.success('Category successfully deleted', 3000);
     }
   };
 
   const addNewCategory = async () => {
-    if (!newRow.type || !newRow.platform) {
+    if (!newRow.type || !newRow.platforms) {
       setDialogText(
         <div className={styles.alertText}>*Please fill in each field</div>
       );
     } else {
-      const res = await fetch('/api/categories/?platform_id=ID', {
+      const res = await fetch('/api/categories/?platforms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: newRow.type,
-          platform: newRow.platform,
+          platforms: newRow.platforms,
         }),
       }).then(res => res.json());
 
@@ -128,63 +130,72 @@ export default function Testing() {
         Alert.error(res.message, 0);
       } else {
         setShowNewCategoryDialog(false);
-        newRow = { type: null };
+        newRow = { type: null, platforms: null };
 
         // Refetch to ensure no stale data
-        mutate('/api/questions?default_urls=1');
+        mutate('/api/categories');
         Alert.success('New question successfully added', 3000);
       }
     }
   };
 
   const renderActionCells = (editing, row, i, host) => {
-    // if (editing === i) {
-    //   return (
-    //     <div className={styles.actionButtons}>
-    //       <Button
-    //         aria-label={'Save'}
-    //         id={'saveEdit' + i}
-    //         appearance="primary"
-    //         onClick={() => updateQuestion()}>
-    //         <Icon icon="save" />
-    //       </Button>
-    //       <Button
-    //         aria-label={'Cancel'}
-    //         color="red"
-    //         onClick={() => {
-    //           // No row is being edited so reset this value
-    //           editedRow = null;
-    //           setEditing(null);
-    //           // Refetch to ensure no stale data
-    //           mutate('/api/questions?default_urls=1');
-    //         }}>
-    //         <Icon icon="close" />
-    //       </Button>
-    //     </div>
-    //   );
-    // } else {
-    return (
-      <div className={styles.actionButtons}>
-        <Link href={{ pathname: '/ADMIN', data: 1 }}>
-          <Button float="right" appearance="primary">
-            <div>Click</div>
+    if (editing === i) {
+      return (
+        <div className={styles.actionButtons}>
+          <Button
+            aria-label={'Save'}
+            id={'saveEdit' + i}
+            appearance="primary"
+            onClick={() => updateCategory()}>
+            <Icon icon="save" />
           </Button>
-        </Link>
-        <Button
-          color="red"
-          onClick={async () => {
-            if (
-              window.confirm(
-                'Are you sure you want to delete this question?. Deleting a question cannot be undone.'
-              )
-            ) {
-              await deleteCategory(row.id);
-            }
-          }}>
-          <Icon icon="trash" />
-        </Button>
-      </div>
-    );
+          <Button
+            aria-label={'Cancel'}
+            color="red"
+            onClick={() => {
+              // No row is being edited so reset this value
+              editedRow = null;
+              setEditing(null);
+              // Refetch to ensure no stale data
+              mutate('/api/categories');
+            }}>
+            <Icon icon="close" />
+          </Button>
+        </div>
+      );
+    } else
+      return (
+        <div className={styles.actionButtons}>
+          <Link href={{ pathname: '/ADMIN', query: { category_id: '5' } }}>
+            <Button float="right" color="orange">
+              <Icon icon="eye" />
+            </Button>
+          </Link>
+          <Button
+            aria-label={'Edit Category'}
+            id={'edit' + i}
+            // appearance="subtle"
+            color="green"
+            onClick={() => setEditing(i)}>
+            <Icon icon="pencil" />
+          </Button>
+          <Button
+            id={'delete' + i}
+            color="red"
+            onClick={async () => {
+              if (
+                window.confirm(
+                  'Are you sure you want to delete this category?. Deleting a category cannot be undone.'
+                )
+              ) {
+                await deleteCategory(row.id);
+              }
+            }}>
+            <Icon icon="trash" />
+          </Button>
+        </div>
+      );
   };
 
   return (
@@ -207,7 +218,7 @@ export default function Testing() {
             <Input
               id="platformText"
               className={styles.input}
-              onChange={value => (newRow.platform = value)}
+              onChange={value => (newRow.platforms = value)}
             />
           </div>,
         ]}
@@ -243,7 +254,7 @@ export default function Testing() {
         data={data}
         columns={columns}
         renderActionCells={renderActionCells}
-        editing={false}
+        editing={editing}
       />
     </div>
   );

@@ -117,7 +117,7 @@ import { platform } from 'chart.js';
  */
 const handler = async (req, res) => {
   const { session } = req;
-
+  // console.log(req.query.id);
   if (req.method === 'POST') {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
@@ -139,7 +139,6 @@ const handler = async (req, res) => {
         body: body,
         type: type,
         category_id: Number(categories),
-        // platform_id: Number(platform),
       },
     });
 
@@ -152,44 +151,25 @@ const handler = async (req, res) => {
       categories: true,
       body: true,
       type: true,
-      // platform_id: true,
     };
-
-    // Handle the `default_urls` override to always fetch the default URL
-    // if (req.query.default_urls !== '1') {
-    //   queryParams.question_urls = {
-    //     select: { url: true },
-    //     where: { department_id: session.departmentId },
-    //   };
-    // }
 
     const questions = await prisma.questions.findMany({
       select: queryParams,
-      where: { categories: { platforms: { user_id: session.user.userId } } },
+      where: {
+        categories: { platforms: { user_id: session.user.userId } },
+        archived: false,
+        category_id: Number(req.query.id),
+      },
     });
 
-    // Return an object with keys as question types, and values as arrays of questions with each type
-    // e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
-    const questionsToReturn = questions.reduce((result, question) => {
-      // Only return a single URL: custom URL if it exists, else the default one
-      // if (question.question_urls && question.question_urls.length) {
-      //   question.url = question.question_urls[0].url;
-      // } else {
-      //   question.url = question.default_url;
-      // }
-
-      // delete question.question_urls;
-      // delete question.default_url;
-
-      if (result[question.type]) {
-        result[question.type].push(question);
-      } else {
-        result[question.type] = [question];
-      }
-      return result;
-    }, {});
-
-    return res.json(questionsToReturn);
+    return res.json(
+      questions.map(q => ({
+        id: q.id,
+        body: q.body,
+        type: q.type,
+        categories: q.categories,
+      }))
+    );
   }
 
   res.status(405).json({ error: true, message: 'Method Not Allowed' });

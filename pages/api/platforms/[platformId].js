@@ -128,45 +128,6 @@ const handler = async (req, res) => {
         });
       }
       includes.user_join_codes = { select: { code: true } };
-      // } else if (session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
-      //   const isDepartmentInHospital = await prisma.departments.count({
-      //     where: {
-      //       AND: [
-      //         { id: { equals: +req.query.departmentId } },
-      //         { hospital_id: { equals: session.user.hospitalId } },
-      //       ],
-      //     },
-      //   });
-
-      //   if (!isDepartmentInHospital) {
-      //     return res.status(403).json({
-      //       error: true,
-      //       message:
-      //         'You do not have permission to view a department that is not in your hospital',
-      //     });
-      //   }
-      // } else if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
-      //   const isDepartmentInHealthBoard = await prisma.departments.count({
-      //     where: {
-      //       AND: [
-      //         { id: { equals: +req.query.departmentId } },
-      //         {
-      //           hospitals: {
-      //             health_board_id: { equals: session.user.healthBoardId },
-      //           },
-      //         },
-      //       ],
-      //     },
-      //   });
-
-      //   if (!isDepartmentInHealthBoard) {
-      //     return res.status(403).json({
-      //       error: true,
-      //       message:
-      //         'You do not have permission to view a department that is not in your health board',
-      //     });
-      //   }
-      // }
 
       let platform;
       if (Object.keys(includes).length) {
@@ -181,43 +142,6 @@ const handler = async (req, res) => {
       }
       return res.json(platform);
     }
-
-    // if (req.method === 'DELETE') {
-    //   if (!session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
-    //     return res.status(403).json({
-    //       error: true,
-    //       message: 'You do not have permission to delete departments',
-    //     });
-    //   }
-
-    //   const isDepartmentInHospital = await prisma.departments.count({
-    //     where: {
-    //       AND: [
-    //         { id: { equals: +req.query.departmentId } },
-    //         { hospital_id: { equals: session.user.hospitalId } },
-    //       ],
-    //     },
-    //   });
-
-    //   if (!isDepartmentInHospital) {
-    //     return res.status(403).json({
-    //       error: true,
-    //       message: 'You do not have permission to delete this department',
-    //     });
-    //   }
-
-    //   const responses = await Promise.all([
-    //     prisma.departments.update({
-    //       data: { archived: true },
-    //       where: { id: +req.query.departmentId },
-    //     }),
-    //     prisma.question_urls.deleteMany({
-    //       where: { department_id: { equals: +req.query.departmentId } },
-    //     }),
-    //   ]);
-
-    //   return res.json({ success: responses.every(r => !!r) });
-    // }
 
     res.status(405).json({ error: true, message: 'Method Not Allowed' });
   }
@@ -238,11 +162,7 @@ const handler = async (req, res) => {
       });
     }
 
-    // Note: we don't support changing the standard of a question (otherwise users will
-    // answer the same question but scores will be recorded against different standards,
-    // skewing the results)
     const fields = {};
-    // if (url) fields.default_url = url;
     if (name) fields.name = name;
 
     const response = await prisma.platforms.update({

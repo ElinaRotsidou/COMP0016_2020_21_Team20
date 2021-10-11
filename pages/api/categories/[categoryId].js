@@ -118,8 +118,8 @@ const handler = async (req, res) => {
       });
     }
 
-    const { type, platform } = req.body;
-    if (!type && !platform) {
+    const { type } = req.body;
+    if (!type) {
       return res.status(422).json({
         error: true,
         message: 'The required category details are missing',
@@ -132,7 +132,6 @@ const handler = async (req, res) => {
     const fields = {};
     // if (url) fields.default_url = url;
     if (type) fields.type = type;
-    if (platform) fields.platform = platform;
 
     const response = await prisma.categories.update({
       where: { id: +categoryId },

@@ -10,10 +10,15 @@ import Testing from '/Users/elinarotsidou/Documents/GitHub/COMP0016_2020_21_Team
 import { Roles } from '../lib/constants';
 
 export async function getServerSideProps(context) {
-  return { props: { session: await getSession(context) } };
+  return {
+    props: {
+      session: await getSession(context),
+      host: context.req.headers.host,
+    },
+  };
 }
 
-function ManagePlat({ session, toggleTheme }) {
+function ManagePlat({ session, host, toggleTheme }) {
   if (!session) {
     return (
       <div>
@@ -39,7 +44,7 @@ function ManagePlat({ session, toggleTheme }) {
         <div>
           <h3>
             Manage Platforms
-            <Testing />
+            <Testing host={host} />
           </h3>
           {/* <Button 
           float="right"
@@ -65,6 +70,7 @@ function ManagePlat({ session, toggleTheme }) {
 
 ManagePlat.propTypes = {
   session: PropTypes.object.isRequired,
+  host: PropTypes.string.isRequired,
   toggleTheme: PropTypes.func.isRequired,
 };
 

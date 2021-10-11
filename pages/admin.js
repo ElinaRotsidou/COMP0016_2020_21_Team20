@@ -8,7 +8,12 @@ import { Header, LoginMessage, QuestionsTable, NoAccess } from '../components';
 import { Roles } from '../lib/constants';
 
 export async function getServerSideProps(context) {
-  return { props: { session: await getSession(context) } };
+  return {
+    props: {
+      session: await getSession(context),
+      host: context.req.headers.host,
+    },
+  };
 }
 
 /**

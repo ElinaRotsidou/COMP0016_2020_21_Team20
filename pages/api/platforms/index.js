@@ -141,12 +141,10 @@ const handler = async (req, res) => {
         user_id: session.user.userId,
         name: name,
         user_join_codes: { create: { code: await createJoinCode() } },
-        admin_join_codes: { create: { code: await createJoinCode() } },
       },
 
       include: {
         user_join_codes: { select: { code: true } },
-        admin_join_codes: { select: { code: true } },
       },
     });
 

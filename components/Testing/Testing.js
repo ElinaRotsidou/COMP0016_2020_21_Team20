@@ -9,6 +9,7 @@ import {
   PanelGroup,
 } from 'rsuite';
 import { mutate } from 'swr';
+import PropTypes from 'prop-types';
 
 import styles from './Testing.module.css';
 import Link from 'next/link';
@@ -35,7 +36,6 @@ const columns = [
           <Input
             id={'platformInput' + i}
             className={styles.input}
-            // key={row.categories.name}
             defaultValue={row.name}
             onChange={value => (editedRow.name = value)}
           />
@@ -52,30 +52,6 @@ const columns = [
     render: (editing, row, host) =>
       `https://${host}/join/${Roles.USER_TYPE_USER}/${row['user_join_code']}`,
   },
-  // {
-  //   id: 'url',
-  //   label: 'Join URL',
-  //   width: 'auto',
-  //   render: (editing, row, host) =>
-  //     `https://${host}/join/${Roles.USER_TYPE_DEPARTMENT}/${row['user_join_codes']}`,
-  // },
-  // {
-  //   id: 'platform',
-  //   label: 'Platforms',
-  //   width: '40%',
-  //   render: (edited, row, host, i) => {
-  //       return <div id={'platform' + i}>{row.name}</div>;
-  //   },
-  // },
-
-  //   {
-  //   id: 'user_join_codes',
-  //   label: 'Join Code',
-  //   width: 'auto',
-  //   render: (edited, row, host, i) => {
-  //       return <div id={'user_join_codes' + i}>{row.user_join_codes}</div>;
-  //   },
-  // },
 
   { id: 'actions', label: 'Actions', width: 'auto' },
 ];
@@ -90,7 +66,7 @@ const usePlatforms = () => {
 };
 
 var editedRow = null;
-export default function Testing(host) {
+export default function Testing({ host }) {
   const [editing, setEditing] = useState(false);
   const [showNewPlatformDialog, setShowNewPlatformDialog] = useState(false);
   const [dialogText, setDialogText] = useState(null);
@@ -107,9 +83,6 @@ export default function Testing(host) {
   }
 
   const updatePlatform = async () => {
-    console.log('dame' + editedRow);
-    console.log(editedRow);
-
     const res = await fetch('/api/platforms/' + editedRow.id, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -121,7 +94,7 @@ export default function Testing(host) {
     } else {
       setEditing(null);
       // Refetch to ensure no stale data
-      // mutate('/api/questions?default_urls=1');
+      mutate('/api/platforms');
       Alert.success('Platform successfully updated', 3000);
     }
   };
@@ -162,15 +135,13 @@ export default function Testing(host) {
         newRow = { name: null };
 
         // Refetch to ensure no stale data
-        mutate('/api/questions?default_urls=1');
-        Alert.success('New question successfully added', 3000);
+        mutate('/api/platforms');
+        Alert.success('New platform successfully added', 3000);
       }
     }
   };
 
   const renderActionCells = (editing, row, i, host) => {
-    console.log('hi');
-    console.log(row);
     if (editing === i) {
       return (
         <div className={styles.actionButtons}>
@@ -189,7 +160,7 @@ export default function Testing(host) {
               editedRow = null;
               setEditing(null);
               // Refetch to ensure no stale data
-              mutate('/api/platforms?default_urls=1');
+              mutate('/api/platforms');
             }}>
             <Icon icon="close" />
           </Button>
@@ -198,8 +169,7 @@ export default function Testing(host) {
     } else {
       return (
         <div className={styles.actionButtons}>
-          <Link
-            href={{ pathname: '/categories', query: { platform_id: 'ID' } }}>
+          <Link href={{ pathname: '/categories', query: { platform_id: '8' } }}>
             <Button
               float="right"
               // appearance="subtle"
@@ -225,7 +195,6 @@ export default function Testing(host) {
           </Button>
           <Button
             id={'delete' + i}
-            // appearance="subtle"
             color="red"
             onClick={async () => {
               if (
@@ -296,3 +265,8 @@ export default function Testing(host) {
     </div>
   );
 }
+
+Testing.propTypes = {
+  /** The host name of the website*/
+  host: PropTypes.string.isRequired,
+};
