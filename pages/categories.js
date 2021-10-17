@@ -3,9 +3,7 @@ import Head from 'next/head';
 import PropTypes from 'prop-types';
 import { Panel, PanelGroup, Table, Button } from 'rsuite';
 
-import { Header, LoginMessage, NoAccess } from '../components';
-
-import TestingCat from '/Users/elinarotsidou/Documents/GitHub/COMP0016_2020_21_Team20/components/TestingCat/TestingCat.js';
+import { Header, LoginMessage, NoAccess, CategoriesTable } from '../components';
 
 import { Roles } from '../lib/constants';
 
@@ -34,15 +32,8 @@ function ManageCat({ session, toggleTheme }) {
         <div>
           <h3>Manage Categories</h3>
           <h4>
-            <TestingCat />
+            <CategoriesTable />
           </h4>
-          {/* <Button  
-        float="right"
-        appearance="primary"
-        onClick={event =>  window.location.href='/admin'}
-        >  
-        <div>Add new question</div>
-      </Button> */}
         </div>
       ) : (
         <NoAccess />

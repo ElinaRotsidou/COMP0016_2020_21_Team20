@@ -11,11 +11,7 @@ import { Roles } from '../../lib/constants';
 import { ProfileButton } from '..';
 
 const paths = {
-  [Roles.USER_TYPE_HEALTH_BOARD]: ['STATISTICS'],
-  [Roles.USER_TYPE_HOSPITAL]: ['STATISTICS', 'MANAGE'],
-  [Roles.USER_TYPE_DEPARTMENT]: ['STATISTICS', 'SELF-REPORTING', 'MANAGE'],
-  [Roles.USER_TYPE_CLINICIAN]: ['STATISTICS', 'SELF-REPORTING'],
-  [Roles.USER_TYPE_USER]: ['STATISTICS', 'SELF-REPORTING'],
+  [Roles.USER_TYPE_USER]: ['SELF-REPORTING', 'STATISTICS'],
   [Roles.USER_TYPE_ADMIN]: ['PLATFORMS', 'STATISTICS', 'MANAGE'],
 };
 
@@ -81,19 +77,6 @@ function Header({ session, toggleTheme }) {
         ref={mobileMenuRef}
         className={`${styles.links} ${isOpen ? styles.open : ''}`}>
         {session && renderLinks()}
-        {/* <ul className={styles.list}>
-          <Nav.Item
-            onClick={() =>
-              window &&
-              window.open(
-                'https://liveuclac-my.sharepoint.com/:w:/g/personal/zcabmzi_ucl_ac_uk/EXJNiRz5slBPv0KfCFdaep4BEiiZumxu2SwkeFsuEx_RGg?e=cYTzgn',
-                '_blank',
-                'fullscreen=yes'
-              )
-            }>
-            HELP
-          </Nav.Item>
-        </ul> */}
 
         <div className={styles.profile}>
           {session ? (

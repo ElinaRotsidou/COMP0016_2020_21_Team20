@@ -46,8 +46,6 @@ const generateQueryParams = ({
     query[dataToDisplayOverride.key] = dataToDisplayOverride.value;
   }
 
-  console.log(querystring.stringify(query));
-
   return querystring.stringify(query);
 };
 
@@ -92,9 +90,6 @@ function Statistics({ session, toggleTheme }) {
     })}`
   );
 
-  console.log('error');
-  console.log(error);
-
   var localData, localError, localMessage;
   if (data) {
     localData = data;
@@ -105,8 +100,6 @@ function Statistics({ session, toggleTheme }) {
     localError = error;
     localMessage = error ? error.message : null;
   }
-
-  console.log(localData);
 
   if (localError) {
     Alert.error(
@@ -166,14 +159,11 @@ function Statistics({ session, toggleTheme }) {
           timestamp: d.timestamp,
           scores: d.scores.map(s => ({
             score: s.score,
-            // standardName: s.standards.name,
-            // color: StandardColors[s.standards.name],
+            standardName: 'question',
+            color: '#2f5596',
           })),
         }))
       : null;
-
-  console.log('dataToSend');
-  console.log(dataToSend);
 
   return (
     <div>
@@ -214,7 +204,7 @@ function Statistics({ session, toggleTheme }) {
             ''
           )}
 
-          {visualisationType === Visualisations.WORD_CLOUD_ENABLERS ||
+          {/* {visualisationType === Visualisations.WORD_CLOUD_ENABLERS ||
           visualisationType === Visualisations.WORD_CLOUD_BARRIERS ? (
             <WordCloud
               words={
@@ -226,7 +216,7 @@ function Statistics({ session, toggleTheme }) {
             />
           ) : (
             ''
-          )}
+          )} */}
         </div>
       </div>
     </div>

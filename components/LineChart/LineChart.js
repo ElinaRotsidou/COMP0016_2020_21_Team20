@@ -67,12 +67,9 @@ const formatData = data => {
         standardData.pointStyle.push('circle');
       }
     });
-    standardData.data = thisStandardData.map(s => (s.score / 4) * 100);
+    standardData.data = thisStandardData.map(s => s.score);
     formattedData.datasets.push(standardData);
   }
-
-  // Append a dummy legend button 'invert selection', handled in the legend click handler
-  formattedData.datasets.push({ label: 'Invert selection' });
 
   return formattedData;
 };
@@ -117,7 +114,7 @@ function LineChart({ data } = {}) {
       <>
         <h2 className={styles.title}>Self-reporting over time</h2>
         <p className={styles.legend}>
-          Click on the legend to toggle the standards.
+          Click on the legend to toggle responses.
         </p>
         <Line
           data={formatData(data)}

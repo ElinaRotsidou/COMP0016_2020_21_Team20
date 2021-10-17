@@ -10,7 +10,7 @@ const subtractDays = days => {
 };
 
 export function Filters({ session, ...props }) {
-  const [departments, setDepartments] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
   const [hospitals, setHospitals] = useState([]);
 
   /**
@@ -26,87 +26,87 @@ export function Filters({ session, ...props }) {
    * dropdown is selected.
    */
   const renderExtraFilters = () => {
-    if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
+    // if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
+    //   return (
+    //     <>
+    //       <p>Group</p>
+    //       <SelectPicker
+    //         value={
+    //           props.dataToDisplayOverride === null
+    //             ? 'health_board'
+    //             : `${props.dataToDisplayOverride.key}-${props.dataToDisplayOverride.value}`
+    //         }
+    //         onOpen={() => {
+    //           fetch('/api/departments')
+    //             .then(res => res.json())
+    //             .then(res => setDepartments(res));
+
+    //           fetch('/api/hospitals')
+    //             .then(res => res.json())
+    //             .then(res => setHospitals(res));
+    //         }}
+    //         onChange={value => {
+    //           if (value === 'health_board') {
+    //             props.setDataToDisplayOverride(null);
+    //           } else {
+    //             const split = value.split('-');
+    //             props.setDataToDisplayOverride({
+    //               key: split[0],
+    //               value: split[1],
+    //             });
+    //           }
+    //         }}
+    //         searchable={true}
+    //         placeholder="Select"
+    //         cleanable={false}
+    //         block={true}
+    //         data={[
+    //           {
+    //             label: 'My Health Board',
+    //             value: 'health_board',
+    //             type: 'Health Board',
+    //           },
+    //           ...departments.map(d => ({
+    //             label: d.name,
+    //             value: `department_id-${d.id}`,
+    //             type: 'Department',
+    //           })),
+    //           ...hospitals.map(h => ({
+    //             label: h.name,
+    //             value: `hospital_id-${h.id}`,
+    //             type: 'Hospital',
+    //           })),
+    //         ]}
+    //         groupBy="type"
+    //         renderMenu={menu =>
+    //           hospitals.length || departments.length ? (
+    //             menu
+    //           ) : (
+    //             <Icon icon="spinner" spin />
+    //           )
+    //         }
+    //       />
+    //     </>
+    //   );
+    // }
+
+    if (session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return (
         <>
           <p>Group</p>
           <SelectPicker
             value={
               props.dataToDisplayOverride === null
-                ? 'health_board'
-                : `${props.dataToDisplayOverride.key}-${props.dataToDisplayOverride.value}`
-            }
-            onOpen={() => {
-              fetch('/api/departments')
-                .then(res => res.json())
-                .then(res => setDepartments(res));
-
-              fetch('/api/hospitals')
-                .then(res => res.json())
-                .then(res => setHospitals(res));
-            }}
-            onChange={value => {
-              if (value === 'health_board') {
-                props.setDataToDisplayOverride(null);
-              } else {
-                const split = value.split('-');
-                props.setDataToDisplayOverride({
-                  key: split[0],
-                  value: split[1],
-                });
-              }
-            }}
-            searchable={true}
-            placeholder="Select"
-            cleanable={false}
-            block={true}
-            data={[
-              {
-                label: 'My Health Board',
-                value: 'health_board',
-                type: 'Health Board',
-              },
-              ...departments.map(d => ({
-                label: d.name,
-                value: `department_id-${d.id}`,
-                type: 'Department',
-              })),
-              ...hospitals.map(h => ({
-                label: h.name,
-                value: `hospital_id-${h.id}`,
-                type: 'Hospital',
-              })),
-            ]}
-            groupBy="type"
-            renderMenu={menu =>
-              hospitals.length || departments.length ? (
-                menu
-              ) : (
-                <Icon icon="spinner" spin />
-              )
-            }
-          />
-        </>
-      );
-    }
-
-    if (session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)) {
-      return (
-        <>
-          <p>Group</p>
-          <SelectPicker
-            value={
-              props.dataToDisplayOverride === null
-                ? 'hospital'
+                ? 'platform'
                 : `${props.dataToDisplayOverride.key}-${props.dataToDisplayOverride.value}`
             }
             onOpen={() =>
-              fetch('/api/departments')
+              fetch('/api/platforms')
                 .then(res => res.json())
-                .then(res => setDepartments(res))
+                .then(res => setPlatforms(res))
             }
             onChange={value => {
-              if (value === 'hospital') {
+              if (value === 'platform') {
                 props.setDataToDisplayOverride(null);
               } else {
                 const split = value.split('-');
@@ -122,49 +122,29 @@ export function Filters({ session, ...props }) {
             block={true}
             data={[
               {
-                label: 'My Hospital',
-                value: 'hospital',
-                type: 'Hospital',
+                label: 'My Platforms',
+                value: 'platform',
+                type: 'Platform',
               },
-              ...departments.map(d => ({
-                label: d.name,
-                value: `department_id-${d.id}`,
-                type: 'Department',
+              ...platforms.map(p => ({
+                label: p.name,
+                value: `platform_id-${p.id}`,
+                type: 'Platform',
               })),
             ]}
             groupBy="type"
             renderMenu={menu =>
-              departments.length ? menu : <Icon icon="spinner" spin />
+              platforms.length ? menu : <Icon icon="spinner" spin />
             }
           />
-        </>
-      );
-    }
-
-    if (session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT)) {
-      return (
-        <>
-          <p>Group</p>
-          <SelectPicker
-            aria-label="group"
-            aria-expanded="false"
-            value={props.dataToDisplayOverride ? 'myself' : 'department'}
-            onChange={value =>
-              props.setDataToDisplayOverride(
-                value === 'myself'
-                  ? { key: 'user_id', value: session.user.userId }
-                  : null
-              )
-            }
-            searchable={false}
-            placeholder="Select"
-            cleanable={false}
-            block={true}
-            data={[
-              { label: 'Myself', value: 'myself' },
-              { label: 'My Department', value: 'department' },
-            ]}
-          />
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+          <p>
+            Each dot accross the line represents an average of the user's
+            response to the questions based on the scale that is in place (0-6)
+          </p>
         </>
       );
     }
@@ -219,14 +199,14 @@ export function Filters({ session, ...props }) {
             label: <text id="lineChart">Line Chart</text>,
             value: Visualisations.LINE_CHART,
           },
-          {
-            label: <text id="enablersWords">Enablers Word Cloud</text>,
-            value: Visualisations.WORD_CLOUD_ENABLERS,
-          },
-          {
-            label: <text id="barriersWords">Barriers Word Cloud</text>,
-            value: Visualisations.WORD_CLOUD_BARRIERS,
-          },
+          // {
+          //   label: <text id="enablersWords">Enablers Word Cloud</text>,
+          //   value: Visualisations.WORD_CLOUD_ENABLERS,
+          // },
+          // {
+          //   label: <text id="barriersWords">Barriers Word Cloud</text>,
+          //   value: Visualisations.WORD_CLOUD_BARRIERS,
+          // },
         ]}
       />
 

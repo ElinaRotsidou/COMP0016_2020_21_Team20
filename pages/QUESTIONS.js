@@ -1,9 +1,9 @@
 import { getSession } from 'next-auth/client';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
-import { Panel, PanelGroup, Table, Button, Icon } from 'rsuite';
+import { Panel, PanelGroup, Table, Button } from 'rsuite';
 
-import { Header, LoginMessage, NoAccess, PlatformsTable } from '../components';
+import { Header, LoginMessage, QuestionsTable, NoAccess } from '../components';
 
 import { Roles } from '../lib/constants';
 
@@ -16,7 +16,16 @@ export async function getServerSideProps(context) {
   };
 }
 
-function ManagePlat({ session, host, toggleTheme }) {
+/**
+ * The admin page allows administrators to manage and add new questions, via the QuestionsTable component.
+ * If the user is not logged in, they are prompted to login.
+ *
+ * All other users do not have access to this page.
+ *
+ * @param session the user's session object to decide what to display
+ * @param toggleTheme the global function to toggle the current theme
+ */
+function Manage({ session, toggleTheme }) {
   if (!session) {
     return (
       <div>
@@ -25,11 +34,6 @@ function ManagePlat({ session, host, toggleTheme }) {
       </div>
     );
   }
-
-  // function addCode() {
-  //    document.getElementById("add_to_me").innerHTML +=
-  //    "<h3>This is the text which has been inserted by JS</h3>";
-  // };
 
   return (
     <div>
@@ -40,10 +44,8 @@ function ManagePlat({ session, host, toggleTheme }) {
       <Header session={session} toggleTheme={toggleTheme} />
       {session.user.roles.includes(Roles.USER_TYPE_ADMIN) ? (
         <div>
-          <h3>
-            Manage Platforms
-            <PlatformsTable host={host} />
-          </h3>
+          <h3>Manage questions</h3>
+          <QuestionsTable />
         </div>
       ) : (
         <NoAccess />
@@ -52,10 +54,9 @@ function ManagePlat({ session, host, toggleTheme }) {
   );
 }
 
-ManagePlat.propTypes = {
+Manage.propTypes = {
   session: PropTypes.object.isRequired,
-  host: PropTypes.string.isRequired,
   toggleTheme: PropTypes.func.isRequired,
 };
 
-export default ManagePlat;
+export default Manage;

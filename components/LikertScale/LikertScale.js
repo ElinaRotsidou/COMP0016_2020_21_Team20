@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import styles from './LikertScale.module.css';
 
 const options = {
-  'Strongly Disagree (1)': 0,
-  'Somewhat Disagree (2)': 1,
-  'Disagree (3)': 2,
-  'Neutral (4)': 3,
-  'Agree (5)': 4,
-  'Somewhat Agree (6)': 5,
-  'Strongly Agree (7)': 6,
+  'Strongly Disagree (0)': 0,
+  'Somewhat Disagree (1)': 1,
+  'Disagree (2)': 2,
+  'Neutral (3)': 3,
+  'Agree (4)': 4,
+  'Somewhat Agree (5)': 5,
+  'Strongly Agree (6)': 6,
 };
 
 function LikertScale(props) {

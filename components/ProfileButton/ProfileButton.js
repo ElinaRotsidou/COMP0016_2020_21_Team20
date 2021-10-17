@@ -3,7 +3,7 @@ import { Dropdown, Icon } from 'rsuite';
 import styles from './ProfileButton.module.css';
 import PropTypes from 'prop-types';
 
-import { LeaveDeptButton } from '../';
+import { LeaveButton } from '../';
 
 import config from '../../lib/config';
 import { Roles } from '../../lib/constants';
@@ -12,13 +12,11 @@ function ProfileButton({ session }) {
   return (
     <Dropdown role="button" title="Your account" icon={<Icon icon="user" />}>
       {/*only show leave option if clinician or department*/}
-      {session &&
-        (session.user.roles.includes(Roles.USER_TYPE_CLINICIAN) ||
-          session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT)) && (
-          <Dropdown.Item role="menuitem">
-            <LeaveDeptButton />
-          </Dropdown.Item>
-        )}
+      {session && session.user.roles.includes(Roles.USER_TYPE_USER) && (
+        <Dropdown.Item role="menuitem">
+          <LeaveButton />
+        </Dropdown.Item>
+      )}
       <Dropdown.Item role="menuitem">
         <a
           className={styles.link}

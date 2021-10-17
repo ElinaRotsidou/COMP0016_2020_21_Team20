@@ -89,10 +89,9 @@ const options = {
 
       session.user.userId = profile.sub;
       session.user.platformId = profile.platform_id;
-      // session.user.categoryId = profile.category_id;
-      session.user.departmentId = profile.department_id;
-      session.user.hospitalId = profile.hospital_id;
-      session.user.healthBoardId = profile.health_board_id;
+      // session.user.departmentId = profile.department_id;
+      // session.user.hospitalId = profile.hospital_id;
+      // session.user.healthBoardId = profile.health_board_id;
       return session;
     },
     signIn: async (user, account, profile) => {

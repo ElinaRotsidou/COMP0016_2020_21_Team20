@@ -117,8 +117,7 @@ import { platform } from 'chart.js';
  */
 const handler = async (req, res) => {
   const { session } = req;
-  // console.log(req);
-  // console.log(req.query.id);
+
   if (req.method === 'POST') {
     if (!session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return res.status(403).json({
@@ -127,8 +126,8 @@ const handler = async (req, res) => {
       });
     }
 
-    const { type, platforms } = req.body;
-    if (!type || !platforms) {
+    const { type } = req.body;
+    if (!type) {
       return res.status(422).json({
         error: true,
         message: 'The required question details are missing',
@@ -138,7 +137,7 @@ const handler = async (req, res) => {
     const record = await prisma.categories.create({
       data: {
         type: type,
-        platform_id: Number(platforms),
+        platforms: { connect: { id: Number(req.body.platform_id) } },
       },
     });
 
@@ -151,15 +150,6 @@ const handler = async (req, res) => {
       type: true,
       platforms: true,
     };
-
-    // Handle the `default_urls` override to always fetch the default URL
-
-    // if (req.query.default_urls !== '1') {
-    //   queryParams.question_urls = {
-    //     select: { url: true },
-    //     where: { department_id: session.departmentId },
-    //   };
-    // }
 
     const categories = await prisma.categories.findMany({
       select: queryParams,
@@ -180,32 +170,4 @@ const handler = async (req, res) => {
 
   res.status(405).json({ error: true, message: 'Method Not Allowed' });
 };
-
-// Return an object with keys as question types, and values as arrays of questions with each type
-// e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
-// const questionsToReturn = questions.reduce((result, question) => {
-// Only return a single URL: custom URL if it exists, else the default one
-// if (question.question_urls && question.question_urls.length) {
-//   question.url = question.question_urls[0].url;
-// } else {
-//   question.url = question.default_url;
-// }
-
-// delete question.question_urls;
-// delete question.default_url;
-
-//       if (result[question.type]) {
-//         result[question.type].push(question);
-//       } else {
-//         result[question.type] = [question];
-//       }
-//       return result;
-//     }, {});
-
-//     return res.json(questionsToReturn);
-//   }
-
-//   res.status(405).json({ error: true, message: 'Method Not Allowed' });
-// };
-
 export default requiresAuth(handler);

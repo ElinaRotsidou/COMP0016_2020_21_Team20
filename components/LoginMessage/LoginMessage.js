@@ -4,8 +4,15 @@ import { signIn } from 'next-auth/client';
 function LoginMessage() {
   return (
     <div style={{ textAlign: 'center' }}>
-      <p>You must login or register to use the Care Quality Dashboard.</p>
-      <Button appearance="primary" onClick={() => signIn('keycloak')}>
+      <p style={{ marginTop: '19px' }}>
+        You must login or register to use the Care Quality Dashboard.
+      </p>
+
+      <Button
+        style={{ marginTop: '200px' }}
+        text-align="center"
+        appearance="primary"
+        onClick={() => signIn('keycloak')}>
         Login or Register
       </Button>
     </div>

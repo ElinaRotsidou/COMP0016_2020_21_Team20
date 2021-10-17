@@ -159,14 +159,6 @@ const handler = async (req, res) => {
       user_join_codes: true,
     };
 
-    // Handle the `default_urls` override to always fetch the default URL
-    // if (req.query.default_urls !== '1') {
-    //   queryParams.question_urls = {
-    //     select: { url: true },
-    //     where: { department_id: session.departmentId },
-    //   };
-    // }
-
     const platforms = await prisma.platforms.findMany({
       select: queryParams,
       where: { user_id: session.user.userId, archived: false },
@@ -183,34 +175,5 @@ const handler = async (req, res) => {
 
   res.status(405).json({ error: true, message: 'Method Not Allowed' });
 };
-
-// Return an object with keys as question types, and values as arrays of questions with each type
-// e.g. { likert_scale: [{...}, {...}], words: [{...}, {...}] }
-
-// const questionsToReturn = questions.reduce((result, question) => {
-
-// Only return a single URL: custom URL if it exists, else the default one
-// if (question.question_urls && question.question_urls.length) {
-//   question.url = question.question_urls[0].url;
-// } else {
-//   question.url = question.default_url;
-// }
-
-// delete question.question_urls;
-// delete question.default_url;
-
-//       if (result[question.type]) {
-//         result[question.type].push(question);
-//       } else {
-//         result[question.type] = [question];
-//       }
-//       return result;
-//     }, {});
-
-//     return res.json(questionsToReturn);
-//   }
-
-//   res.status(405).json({ error: true, message: 'Method Not Allowed' });
-// };
 
 export default requiresAuth(handler);

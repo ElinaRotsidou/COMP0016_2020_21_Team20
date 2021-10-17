@@ -11,18 +11,19 @@ import {
 } from 'rsuite';
 import { mutate } from 'swr';
 
-import styles from './QuestionsTable.module.css';
+import styles from './CategoriesTable.module.css';
+import PropTypes from 'prop-types';
 import Link from 'next/link';
 
-import { AlertDialog, CustomTable } from '../';
+import { AlertDialog, CustomTable } from '..';
 import useSWR from '../../lib/swr';
 import { platform } from 'chart.js';
 
 const columns = [
   {
-    id: 'question',
-    label: 'Question body',
-    width: 'auto%',
+    id: 'category',
+    label: 'Categories',
+    width: '40%',
     render: (edited, row, host, i) => {
       if (edited) {
         // If this question is being edited then it needs to be an input box
@@ -32,67 +33,26 @@ const columns = [
         editedRow = buffer;
         return (
           <Input
-            id={'questionInput' + i}
+            id={'category' + i}
             className={styles.input}
-            // key={row.categories.name}
-            defaultValue={row.body}
-            onChange={value => (editedRow.body = value)}
+            defaultValue={row.type}
+            onChange={value => (editedRow.type = value)}
           />
         );
       } else {
-        // Else just display body
-        return <div id={'question' + i}>{row.body}</div>;
+        return <div id={'category' + i}>{row.type}</div>;
       }
     },
   },
-  // {
-  //   id: 'category',
-  //   label: 'Category',
-  //   width: 'auto',
-  //   render: (edited, row) => row.categories.name,
-  // },
 
-  // {
-  //   id: 'url',
-  //   label: 'Training URL',
-  //   width: 'auto',
-  //   render: (edited, row) => {
-  //     if (edited) {
-
-  //       // If this url is being edited then it needs to be an input box
-  //       // Copy all the info about the row being currently edited
-
-  //       const buffer = {};
-  //       Object.assign(buffer, row);
-  //       editedRow = buffer;
-  //       return (
-  //         <Input
-  //           className={styles.input}
-  //           key={row.categories.name}
-  //           defaultValue={row.url}
-  //           onChange={value => (editedRow.url = value)}
-  //         />
-  //       );
-  //     } else {
-  // Else just display URL as link
-  //       return (
-  //         <a href={row.url} target="_blank" rel="noopener noreferrer">
-  //           {row.url}
-  //         </a>
-  //       );
-  //     }
-  //   },
-  // },
   { id: 'actions', label: 'Actions', width: 'auto' },
 ];
 
-const useQuestions = () => {
+const useCategories = () => {
   const router = useRouter();
-  var catid = router.query.category_id;
-
   var platid = router.query.platform_id;
 
-  const { data, error } = useSWR('/api/questions?id=' + catid);
+  const { data, error } = useSWR('/api/categories?id=' + platid);
 
   if (data) {
     return { data: data, error: error || data.error, message: data.message };
@@ -101,18 +61,18 @@ const useQuestions = () => {
 };
 
 var editedRow = null;
-export default function QuestionsTable() {
+
+export default function Testing() {
   const router = useRouter();
-  var catid = router.query.category_id;
   var platid = router.query.platform_id;
 
   const [editing, setEditing] = useState(false);
-  const [showNewQuestionDialog, setShowNewQuestionDialog] = useState(false);
+  const [showNewCategoryDialog, setShowNewCategoryDialog] = useState(false);
   const [dialogText, setDialogText] = useState(null);
 
-  const { data: data, error: error, message: message } = useQuestions();
+  const { data: data, error: error, message: message } = useCategories();
 
-  var newRow = { body: null, type: 'likert_scale', categories: null };
+  var newRow = { type: null, platforms: null };
 
   if (error) {
     Alert.error(
@@ -121,11 +81,11 @@ export default function QuestionsTable() {
     );
   }
 
-  const updateQuestion = async () => {
-    const res = await fetch('/api/questions/' + editedRow.id, {
+  const updateCategory = async () => {
+    const res = await fetch('/api/categories/' + editedRow.id, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ body: editedRow.body }),
+      body: JSON.stringify({ type: editedRow.type }),
     }).then(res => res.json());
 
     if (res.error) {
@@ -133,13 +93,13 @@ export default function QuestionsTable() {
     } else {
       setEditing(null);
       // Refetch to ensure no stale data
-      mutate('/api/questions?id=' + catid);
-      Alert.success('Question successfully updated', 3000);
+      mutate('/api/categories?id=' + platid);
+      Alert.success('Category successfully updated', 3000);
     }
   };
 
-  const deleteQuestion = async id => {
-    const res = await fetch('/api/questions/' + id, {
+  const deleteCategory = async id => {
+    const res = await fetch('/api/categories' + id, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     }).then(res => res.json());
@@ -148,36 +108,35 @@ export default function QuestionsTable() {
       Alert.error(res.message, 0);
     } else {
       // Refetch to ensure no stale data
-      mutate('/api/questions?id=' + catid);
-      Alert.success('Question successfully deleted', 3000);
+      mutate('/api/categories?id=' + platid);
+      Alert.success('Category successfully deleted', 3000);
     }
   };
 
-  const addNewQuestion = async () => {
-    if (!newRow.body) {
+  const addNewCategory = async () => {
+    if (!newRow.type) {
       setDialogText(
         <div className={styles.alertText}>*Please fill in each field</div>
       );
     } else {
-      const res = await fetch('/api/questions/', {
+      const res = await fetch('/api/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          body: newRow.body,
           type: newRow.type,
-          category_id: router.query.category_id,
+          platform_id: router.query.platform_id,
         }),
       }).then(res => res.json());
 
       if (res.error) {
         Alert.error(res.message, 0);
       } else {
-        setShowNewQuestionDialog(false);
-        newRow = { body: null, type: 'likert_scale' };
+        setShowNewCategoryDialog(false);
+        newRow = { type: null };
 
         // Refetch to ensure no stale data
-        mutate('/api/questions?id=' + catid);
-        Alert.success('New question successfully added', 3000);
+        mutate('/api/categories?id=' + platid);
+        Alert.success('New category successfully added', 3000);
       }
     }
   };
@@ -191,9 +150,8 @@ export default function QuestionsTable() {
             id={'saveEdit' + i}
             appearance="primary"
             onClick={() => {
-              mutate('/api/questions?id=' + catid);
-
-              updateQuestion();
+              updateCategory();
+              mutate('/api/categories?id=' + platid);
             }}>
             <Icon icon="save" />
           </Button>
@@ -205,19 +163,25 @@ export default function QuestionsTable() {
               editedRow = null;
               setEditing(null);
               // Refetch to ensure no stale data
-              mutate('/api/questions?id=' + catid);
+              mutate('/api/categories?id=' + platid);
             }}>
             <Icon icon="close" />
           </Button>
         </div>
       );
-    } else {
+    } else
       return (
         <div className={styles.actionButtons}>
+          <Link
+            href={{ pathname: '/QUESTIONS', query: { category_id: row.id } }}>
+            <Button float="right" color="orange">
+              <Icon icon="eye" />
+            </Button>
+          </Link>
           <Button
-            aria-label={'Edit Question'}
+            aria-label={'Edit Category'}
             id={'edit' + i}
-            // appearance="primary"
+            // appearance="subtle"
             color="green"
             onClick={() => setEditing(i)}>
             <Icon icon="pencil" />
@@ -227,32 +191,33 @@ export default function QuestionsTable() {
             color="red"
             onClick={async () => {
               if (
-                window.confirm('Are you sure you want to delete this question?')
+                window.confirm(
+                  'Are you sure you want to delete this category?. Deleting a category cannot be undone.'
+                )
               ) {
-                await deleteQuestion(row.id);
+                await deleteCategory(row.id);
               }
             }}>
             <Icon icon="trash" />
           </Button>
         </div>
       );
-    }
   };
 
   return (
     <div>
       <AlertDialog
-        open={showNewQuestionDialog}
-        setOpen={setShowNewQuestionDialog}
+        open={showNewCategoryDialog}
+        setOpen={setShowNewCategoryDialog}
         title="Please fill in the information of the new question:"
         text={dialogText}
         content={[
-          <div key="alertdialog-new-question">
-            <label>Body:</label>
+          <div key="alertdialog-new-category">
+            <label>Name:</label>
             <Input
               id="bodyText"
               className={styles.input}
-              onChange={value => (newRow.body = value)}
+              onChange={value => (newRow.type = value)}
             />
           </div>,
         ]}
@@ -260,13 +225,16 @@ export default function QuestionsTable() {
           <Button
             key="alertdialog-edit"
             color="red"
-            onClick={() => setShowNewQuestionDialog(false)}>
+            onClick={() => setShowNewCategoryDialog(false)}>
             Cancel
           </Button>,
           <Button
-            id="addQuestion"
+            id="addCategory"
             key="alertdialog-confirm"
-            onClick={() => addNewQuestion()}
+            onClick={() => {
+              addNewCategory();
+              mutate('/api/categories?id=' + platid);
+            }}
             appearance="primary">
             Add
           </Button>,
@@ -274,17 +242,20 @@ export default function QuestionsTable() {
       />
 
       <Button
-        id="addNewQuestion"
+        id="addNewCategory"
         className={styles.buttons}
         appearance="primary"
         onClick={() => {
           setDialogText(null);
-          setShowNewQuestionDialog(true);
+          setShowNewCategoryDialog(true);
         }}>
-        <div>Add new question</div>
+        <div>Add new Category</div>
       </Button>
 
       <div>
+        {/* <div>
+          ${data.name}
+        </div> */}
         <Button float="right" appearance="ghost" onClick={() => router.back()}>
           Back
         </Button>
