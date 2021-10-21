@@ -13,7 +13,7 @@ import 'rsuite/dist/styles/rsuite-default.min.css';
 
 The `CustomTable` component displays a table, which depending on `tableType` is slightly different. The urls table type allows only the urls of the
 questions to be changed. The questions table type allows the urls and question body to be changed and also allows questions to be deleted and
-added. Laslty, the departments table type allows the Hospital user type to add and delete departments and also copy/regenerate each join URL.
+added. Laslty, the platforms table type allows the Hospital user type to add and delete platforms and also copy/regenerate each join URL.
 (if no data the table only shows the column names)
 
 <Props of={CustomTable} />
@@ -28,8 +28,8 @@ It is normally used in the manage page.
     data={['']}
     columns={[
       {
-        id: 'department',
-        label: 'Department Name',
+        id: 'platform',
+        label: 'platformName',
         width: 'auto',
         render: () => null,
       },

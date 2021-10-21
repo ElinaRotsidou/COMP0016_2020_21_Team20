@@ -1,7 +1,6 @@
 import { getSession } from 'next-auth/client';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
-import { Panel, PanelGroup, Table, Button } from 'rsuite';
 
 import { Header, LoginMessage, NoAccess, CategoriesTable } from '../components';
 
@@ -24,7 +23,7 @@ function ManageCat({ session, toggleTheme }) {
   return (
     <div>
       <Head>
-        <title>Manage</title>
+        <title>Platforms</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header session={session} toggleTheme={toggleTheme} />

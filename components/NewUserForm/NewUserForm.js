@@ -35,53 +35,6 @@ export default function NewUserForm({ userType, onError, onSuccess }) {
   const [entityId, setEntityId] = useState(null);
   const [entities, setEntities] = useState([]);
 
-  /**
-   * Render the extra 'Hospital' or 'Health Board' select-dropdowns when adding a
-   * new user for the respective user group.
-   * The hospitals or health boards are asynchronously fetched on-click.
-   * Platform administrators have no parent 'entity' ID, so they are excluded.
-   * If this form is ever updated to allow clinician/department registration, they
-   * would need to be shown a select-dropdown to choose which department they belong to.
-   */
-  const renderEntityFormGroup = () => {
-    if (
-      userType !== Roles.USER_TYPE_USER &&
-      userType !== Roles.USER_TYPE_HEALTH_BOARD &&
-      userType !== Roles.USER_TYPE_HOSPITAL
-      // userType !== Roles.USER_TYPE_ADMIN
-    ) {
-      return <span />;
-    }
-
-    // const textToDisplay =
-    //   userType === Roles.USER_TYPE_ADMIN? 'Platform' : 'Platform';
-    // const apiEndpoint =
-    //   userType === Roles.USER_TYPE_ADMIN? 'platforms' : 'platforms';
-
-    return (
-      <FormGroup>
-        <ControlLabel>Platform</ControlLabel>
-        <FormControl
-          value={entityId}
-          name="id"
-          cleanable={false}
-          accepter={SelectPicker}
-          onOpen={() =>
-            fetch(`/api/platforms`)
-              .then(res => res.json())
-              .then(res => setEntities(res))
-          }
-          data={entities.map(e => ({ label: e.name, value: e.id }))}
-          onChange={setEntityId}
-          renderMenu={menu =>
-            entities.length ? menu : <Icon icon="spinner" spin />
-          }
-        />
-        <HelpBlock>Required</HelpBlock>
-      </FormGroup>
-    );
-  };
-
   const handleSubmit = async () => {
     const res = await fetch(`/api/users`, {
       method: 'POST',
@@ -115,7 +68,26 @@ export default function NewUserForm({ userType, onError, onSuccess }) {
         <HelpBlock>Required</HelpBlock>
       </FormGroup>
 
-      {renderEntityFormGroup()}
+      <FormGroup>
+        <ControlLabel>Platform</ControlLabel>
+        <FormControl
+          value={entityId}
+          name="id"
+          cleanable={false}
+          accepter={SelectPicker}
+          onOpen={() =>
+            fetch(`/api/platforms`)
+              .then(res => res.json())
+              .then(res => setEntities(res))
+          }
+          data={entities.map(e => ({ label: e.name, value: e.id }))}
+          onChange={setEntityId}
+          renderMenu={menu =>
+            entities.length ? menu : <Icon icon="spinner" spin />
+          }
+        />
+        <HelpBlock>Required</HelpBlock>
+      </FormGroup>
 
       <FormGroup>
         <ControlLabel>Password</ControlLabel>
@@ -154,7 +126,6 @@ export default function NewUserForm({ userType, onError, onSuccess }) {
 }
 
 NewUserForm.propTypes = {
-  /** What user type is the new user to be? e.g. `health_board` or `hospital` */
   userType: PropTypes.oneOf(Object.values(Roles)).isRequired,
   /** Callback function to be called on error with the error message */
   onError: PropTypes.func.isRequired,

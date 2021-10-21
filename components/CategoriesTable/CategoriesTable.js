@@ -1,23 +1,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import {
-  Button,
-  Icon,
-  Input,
-  SelectPicker,
-  Alert,
-  Panel,
-  PanelGroup,
-} from 'rsuite';
+import { Button, Icon, Input, Alert } from 'rsuite';
 import { mutate } from 'swr';
 
 import styles from './CategoriesTable.module.css';
-import PropTypes from 'prop-types';
 import Link from 'next/link';
 
 import { AlertDialog, CustomTable } from '..';
 import useSWR from '../../lib/swr';
-import { platform } from 'chart.js';
 
 const columns = [
   {
@@ -26,8 +16,6 @@ const columns = [
     width: '40%',
     render: (edited, row, host, i) => {
       if (edited) {
-        // If this question is being edited then it needs to be an input box
-        // Copy all the info about the row being currently edited
         const buffer = {};
         Object.assign(buffer, row);
         editedRow = buffer;
@@ -253,9 +241,6 @@ export default function Testing() {
       </Button>
 
       <div>
-        {/* <div>
-          ${data.name}
-        </div> */}
         <Button float="right" appearance="ghost" onClick={() => router.back()}>
           Back
         </Button>

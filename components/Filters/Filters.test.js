@@ -8,7 +8,7 @@ describe('Filters', () => {
   it('renders', () => {
     const wrapper = shallow(
       <Filters
-        session={{ user: { roles: Roles.USER_TYPE_CLINICIAN } }}
+        session={{ user: { roles: Roles.USER_TYPE_USER } }}
         dateRange={new Date()}
       />
     );
@@ -16,10 +16,10 @@ describe('Filters', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('shows correct filters for clinician type', () => {
+  it('shows correct filters for user type', () => {
     const wrapper = mount(
       <Filters
-        session={{ user: { roles: Roles.USER_TYPE_CLINICIAN } }}
+        session={{ user: { roles: Roles.USER_TYPE_USER } }}
         dateRange={new Date()}
       />
     );
@@ -35,10 +35,10 @@ describe('Filters', () => {
     );
   });
 
-  it('shows correct filters for department type', () => {
+  it('shows correct filters for admin type', () => {
     const wrapper = mount(
       <Filters
-        session={{ user: { roles: Roles.USER_TYPE_DEPARTMENT } }}
+        session={{ user: { roles: Roles.USER_TYPE_ADMIN } }}
         dateRange={new Date()}
       />
     );

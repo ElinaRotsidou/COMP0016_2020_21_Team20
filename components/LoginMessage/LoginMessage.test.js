@@ -15,9 +15,7 @@ describe('LoginMessage', () => {
 
     expect(
       wrapper.findWhere(n =>
-        n.contains(
-          'You must login or register to use the Care Quality Dashboard.'
-        )
+        n.contains('You must login or register to use the My Dashboard.')
       )
     );
   });

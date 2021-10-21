@@ -11,85 +11,59 @@ const baseProperties = {
   fill: false,
   lineTension: 0.1,
   pointBackgroundColor: '#fff',
-  // data, label, borderColor, etc. remaining
 };
 
-let numberOfStandards = 0;
+let numberOfScores = 0;
 
-/**
- * Chart.js requires a specific format to render the graph. This function simply transforms
- * the data from the API into the correct format required by Chart.js. For reference, the
- * expected format is:
- * {
- *  labels: ['Label 1', 'Label 2', ...],
- *  datasets: [
- *    {
- *      fill: false,
- *      lineTension: 0.1,
- *      pointBackgroundColor: ['color for data point 1', 'color for data point 2', ...],
- *      borderColor: ['color for data point 1', 'color for data point 2', ...],
- *      data: [80, 40, ...],
- *      label: 'Label 1',
- *      ...
- *    }
- *  ]
- * }
- */
 const formatData = data => {
-  const formattedData = {
+  const formData = {
     labels: data.map(d => new Date(d.timestamp)),
     datasets: [],
   };
 
-  numberOfStandards = data[0].scores.length;
-  for (let i = 0; i < numberOfStandards; i++) {
-    const thisStandardData = data.map(d => d.scores[i]);
-    const standardData = Object.assign({}, baseProperties);
-    standardData.borderColor = thisStandardData[0].color;
-    standardData.label = thisStandardData[0].standardName;
+  numberOfScores = data[0].scores.length;
+  for (let i = 0; i < numberOfScores; i++) {
+    const thisData = data.map(d => d.scores[i]);
+    const sData = Object.assign({}, baseProperties);
+    sData.borderColor = thisData[0].color;
+    sData.label = thisData[0].standardName;
 
-    // Change color with mentoring session
     const isMentoringSessions = data.map(d => d.is_mentoring_session);
-    standardData.pointBackgroundColor = [];
-    standardData.pointBorderColor = [];
-    standardData.pointBorderWidth = [];
-    standardData.pointStyle = [];
+    sData.pointBackgroundColor = [];
+    sData.pointBorderColor = [];
+    sData.pointBorderWidth = [];
+    sData.pointStyle = [];
     isMentoringSessions.forEach(isMentoringSession => {
       if (isMentoringSession) {
-        standardData.pointBackgroundColor.push(MENTORING_SESSION_POINT_COLOR);
-        standardData.pointBorderColor.push(MENTORING_SESSION_POINT_COLOR);
-        standardData.pointStyle.push('triangle');
-        standardData.pointBorderWidth.push(4);
+        sData.pointBackgroundColor.push(MENTORING_SESSION_POINT_COLOR);
+        sData.pointBorderColor.push(MENTORING_SESSION_POINT_COLOR);
+        sData.pointStyle.push('triangle');
+        sData.pointBorderWidth.push(4);
       } else {
-        standardData.pointBackgroundColor.push('white');
-        standardData.pointBorderColor.push(thisStandardData[0].color);
-        standardData.pointBorderWidth.push(2);
-        standardData.pointStyle.push('circle');
+        sData.pointBackgroundColor.push('white');
+        sData.pointBorderColor.push(thisData[0].color);
+        sData.pointBorderWidth.push(2);
+        sData.pointStyle.push('circle');
       }
     });
-    standardData.data = thisStandardData.map(s => s.score);
-    formattedData.datasets.push(standardData);
+    sData.data = thisData.map(s => s.score);
+    formData.datasets.push(sData);
   }
 
-  return formattedData;
+  return formData;
 };
 
-/**
- * Handle the 'invert selection' dummy legend item that is appended to the legend
- */
 const legendClickHandler = function (e, legendItem) {
   const chart = this.chart;
 
-  // If not invert selection label, then do default
-  if (legendItem.datasetIndex !== numberOfStandards) {
+  if (legendItem.datasetIndex !== numberOfScores) {
     const index = legendItem.datasetIndex;
     const meta = chart.getDatasetMeta(index);
 
     meta.hidden =
       meta.hidden === null ? !chart.data.datasets[index].hidden : null;
   } else {
-    // If invert selection label, then invert if hidden or not
-    for (let i = 0; i < numberOfStandards; i++) {
+    for (let i = 0; i < numberOfScores; i++) {
       const meta = chart.getDatasetMeta(i);
       meta.hidden =
         meta.hidden === null ? !chart.data.datasets[i].hidden : null;

@@ -3,21 +3,11 @@ const { standards, likertScaleQuestions } = require('../seedData');
 
 const prisma = new PrismaClient();
 
-// const seedStandards = async () => {
-//   await Promise.all(
-//     standards.map((standard, i) =>
-//       prisma.standards.create({ data: { name: standard, id: i + 1 } })
-//     )
-//   );
-// };
-
 const seedQuestions = async () => {
   await Promise.all(
     likertScaleQuestions.map(question => {
       const data = {
-        // default_url: question.url,
         category_id: question.categories,
-        // standards: { connect: { id: question.standardId } },
         type: 'likert_scale',
         body: question.question,
         platform_id: question.platform_id,
@@ -28,7 +18,6 @@ const seedQuestions = async () => {
   );
 
   const seedData = async () => {
-    // await seedStandards();
     await seedEntities();
     await seedQuestions();
   };

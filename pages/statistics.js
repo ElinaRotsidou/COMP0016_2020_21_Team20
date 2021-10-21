@@ -10,21 +10,13 @@ import styles from './statistics.module.css';
 import {
   LineChart,
   Header,
-  CirclesAccordion,
-  AnalyticsAccordion,
   Filters,
   LoginMessage,
-  WordCloud,
   NoAccess,
 } from '../components';
 
 import useSWR from '../lib/swr';
-import {
-  Roles,
-  StandardColors,
-  Standards,
-  Visualisations,
-} from '../lib/constants';
+import { Roles, Visualisations } from '../lib/constants';
 
 const DEFAULT_DATE_OFFSET = 60 * 60 * 24 * 30 * 1000; // 30 days ago;
 
@@ -120,12 +112,8 @@ function Statistics({ session, toggleTheme }) {
   }
 
   if (
-    !session.user.roles.includes(Roles.USER_TYPE_CLINICIAN) &&
-    !session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT) &&
-    !session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD) &&
     !session.user.roles.includes(Roles.USER_TYPE_ADMIN) &&
-    !session.user.roles.includes(Roles.USER_TYPE_USER) &&
-    !session.user.roles.includes(Roles.USER_TYPE_HOSPITAL)
+    !session.user.roles.includes(Roles.USER_TYPE_USER)
   ) {
     return (
       <div>
@@ -134,23 +122,6 @@ function Statistics({ session, toggleTheme }) {
       </div>
     );
   }
-
-  const getAverage = response_id => {
-    const average =
-      !localError && localData ? localData.averages[response_id] : null;
-    return average ? Math.ceil(average * 25) : 0;
-  };
-
-  // const averageStats = Object.entries(Standards).map(
-  //   ([shortName, longName]) => {
-  //     return {
-  //       name: shortName[0].toUpperCase() + shortName.substr(1).toLowerCase(),
-  //       longName: longName[0].toUpperCase() + longName.substr(1).toLowerCase(),
-  //       color: StandardColors[longName],
-  //       percentage: getAverage(longName),
-  //     };
-  //   }
-  // );
 
   const dataToSend =
     !localError && localData
@@ -174,14 +145,6 @@ function Statistics({ session, toggleTheme }) {
 
       <Header session={session} toggleTheme={toggleTheme} />
 
-      {/* <CirclesAccordion circles={averageStats} /> */}
-
-      {/* {((session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT) &&
-        dataToDisplayOverride) ||
-        session.user.roles.includes(Roles.USER_TYPE_CLINICIAN)) && (
-        <AnalyticsAccordion data={dataToSend} stats={averageStats} />
-      )} */}
-
       <div className={styles.content}>
         <div className={styles.filters}>
           <Filters
@@ -203,20 +166,6 @@ function Statistics({ session, toggleTheme }) {
           ) : (
             ''
           )}
-
-          {/* {visualisationType === Visualisations.WORD_CLOUD_ENABLERS ||
-          visualisationType === Visualisations.WORD_CLOUD_BARRIERS ? (
-            <WordCloud
-              words={
-                !localError && localData
-                  ? localData.responses.map(r => r.words.map(w => w)).flat()
-                  : null
-              }
-              visualisationType={visualisationType}
-            />
-          ) : (
-            ''
-          )} */}
         </div>
       </div>
     </div>

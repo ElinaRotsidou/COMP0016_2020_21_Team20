@@ -11,85 +11,8 @@ const subtractDays = days => {
 
 export function Filters({ session, ...props }) {
   const [platforms, setPlatforms] = useState([]);
-  const [hospitals, setHospitals] = useState([]);
 
-  /**
-   * Render extra filters based on user type:
-   * - Health Board users have an extra "Group" filter with a list of departments and
-   * hospitals in their health board, grouped by each category respectively
-   * - Hospital users have an extra "Group" filter with a list of departments in
-   * their hospital
-   * - Department managers have an extre "Group" filter which allows them to choose
-   * between viewing their own responses or their department's aggregate responses
-   *
-   * Most of the logic here is to fetch the relevant data asynchronously when the
-   * dropdown is selected.
-   */
   const renderExtraFilters = () => {
-    // if (session.user.roles.includes(Roles.USER_TYPE_HEALTH_BOARD)) {
-    //   return (
-    //     <>
-    //       <p>Group</p>
-    //       <SelectPicker
-    //         value={
-    //           props.dataToDisplayOverride === null
-    //             ? 'health_board'
-    //             : `${props.dataToDisplayOverride.key}-${props.dataToDisplayOverride.value}`
-    //         }
-    //         onOpen={() => {
-    //           fetch('/api/departments')
-    //             .then(res => res.json())
-    //             .then(res => setDepartments(res));
-
-    //           fetch('/api/hospitals')
-    //             .then(res => res.json())
-    //             .then(res => setHospitals(res));
-    //         }}
-    //         onChange={value => {
-    //           if (value === 'health_board') {
-    //             props.setDataToDisplayOverride(null);
-    //           } else {
-    //             const split = value.split('-');
-    //             props.setDataToDisplayOverride({
-    //               key: split[0],
-    //               value: split[1],
-    //             });
-    //           }
-    //         }}
-    //         searchable={true}
-    //         placeholder="Select"
-    //         cleanable={false}
-    //         block={true}
-    //         data={[
-    //           {
-    //             label: 'My Health Board',
-    //             value: 'health_board',
-    //             type: 'Health Board',
-    //           },
-    //           ...departments.map(d => ({
-    //             label: d.name,
-    //             value: `department_id-${d.id}`,
-    //             type: 'Department',
-    //           })),
-    //           ...hospitals.map(h => ({
-    //             label: h.name,
-    //             value: `hospital_id-${h.id}`,
-    //             type: 'Hospital',
-    //           })),
-    //         ]}
-    //         groupBy="type"
-    //         renderMenu={menu =>
-    //           hospitals.length || departments.length ? (
-    //             menu
-    //           ) : (
-    //             <Icon icon="spinner" spin />
-    //           )
-    //         }
-    //       />
-    //     </>
-    //   );
-    // }
-
     if (session.user.roles.includes(Roles.USER_TYPE_ADMIN)) {
       return (
         <>
@@ -142,8 +65,11 @@ export function Filters({ session, ...props }) {
           <p></p>
           <p></p>
           <p>
-            Each dot accross the line represents an average of the user's
-            response to the questions based on the scale that is in place (0-6)
+            Each line represents a question that is in the chosen database.
+            <p>
+              Each dot accross the line represents the score of that questions'
+              response a user made based on the scale that is in place (0-6)
+            </p>
           </p>
         </>
       );
@@ -158,12 +84,6 @@ export function Filters({ session, ...props }) {
     else return 'any';
   };
 
-  /**
-   * The standard filters shown to ALL users are:
-   * - Date range: a datepicker
-   * - Visualisation: a dropdown menu
-   * - Mentoring session: a dropdown menu
-   */
   return (
     <div>
       <p>Date Range</p>
@@ -199,14 +119,6 @@ export function Filters({ session, ...props }) {
             label: <text id="lineChart">Line Chart</text>,
             value: Visualisations.LINE_CHART,
           },
-          // {
-          //   label: <text id="enablersWords">Enablers Word Cloud</text>,
-          //   value: Visualisations.WORD_CLOUD_ENABLERS,
-          // },
-          // {
-          //   label: <text id="barriersWords">Barriers Word Cloud</text>,
-          //   value: Visualisations.WORD_CLOUD_BARRIERS,
-          // },
         ]}
       />
 

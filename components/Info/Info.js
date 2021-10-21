@@ -17,7 +17,6 @@ function Info(props) {
 }
 
 Info.propTypes = {
-  /** The (training) url this info icon links to */
   url: PropTypes.string.isRequired,
 };
 

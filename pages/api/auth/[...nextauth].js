@@ -89,14 +89,9 @@ const options = {
 
       session.user.userId = profile.sub;
       session.user.platformId = profile.platform_id;
-      // session.user.departmentId = profile.department_id;
-      // session.user.hospitalId = profile.hospital_id;
-      // session.user.healthBoardId = profile.health_board_id;
       return session;
     },
     signIn: async (user, account, profile) => {
-      // Check if their department has been archived.
-      // If so, cancel login, redirect to homepage with error query parameter
       console.log('User attempting log in');
       return await handleUserAttemptLogin(user, account, profile);
     },

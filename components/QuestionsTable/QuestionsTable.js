@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import {
-  Button,
-  Icon,
-  Input,
-  SelectPicker,
-  Alert,
-  Panel,
-  PanelGroup,
-} from 'rsuite';
+import { Button, Icon, Input, Alert } from 'rsuite';
 import { mutate } from 'swr';
 
 import styles from './QuestionsTable.module.css';
@@ -25,8 +17,6 @@ const columns = [
     width: 'auto%',
     render: (edited, row, host, i) => {
       if (edited) {
-        // If this question is being edited then it needs to be an input box
-        // Copy all the info about the row being currently edited
         const buffer = {};
         Object.assign(buffer, row);
         editedRow = buffer;
@@ -34,7 +24,6 @@ const columns = [
           <Input
             id={'questionInput' + i}
             className={styles.input}
-            // key={row.categories.name}
             defaultValue={row.body}
             onChange={value => (editedRow.body = value)}
           />
@@ -45,44 +34,7 @@ const columns = [
       }
     },
   },
-  // {
-  //   id: 'category',
-  //   label: 'Category',
-  //   width: 'auto',
-  //   render: (edited, row) => row.categories.name,
-  // },
 
-  // {
-  //   id: 'url',
-  //   label: 'Training URL',
-  //   width: 'auto',
-  //   render: (edited, row) => {
-  //     if (edited) {
-
-  //       // If this url is being edited then it needs to be an input box
-  //       // Copy all the info about the row being currently edited
-
-  //       const buffer = {};
-  //       Object.assign(buffer, row);
-  //       editedRow = buffer;
-  //       return (
-  //         <Input
-  //           className={styles.input}
-  //           key={row.categories.name}
-  //           defaultValue={row.url}
-  //           onChange={value => (editedRow.url = value)}
-  //         />
-  //       );
-  //     } else {
-  // Else just display URL as link
-  //       return (
-  //         <a href={row.url} target="_blank" rel="noopener noreferrer">
-  //           {row.url}
-  //         </a>
-  //       );
-  //     }
-  //   },
-  // },
   { id: 'actions', label: 'Actions', width: 'auto' },
 ];
 
@@ -132,7 +84,6 @@ export default function QuestionsTable() {
       Alert.error(res.message, 0);
     } else {
       setEditing(null);
-      // Refetch to ensure no stale data
       mutate('/api/questions?id=' + catid);
       Alert.success('Question successfully updated', 3000);
     }
@@ -147,7 +98,6 @@ export default function QuestionsTable() {
     if (res.error) {
       Alert.error(res.message, 0);
     } else {
-      // Refetch to ensure no stale data
       mutate('/api/questions?id=' + catid);
       Alert.success('Question successfully deleted', 3000);
     }
@@ -174,8 +124,6 @@ export default function QuestionsTable() {
       } else {
         setShowNewQuestionDialog(false);
         newRow = { body: null, type: 'likert_scale' };
-
-        // Refetch to ensure no stale data
         mutate('/api/questions?id=' + catid);
         Alert.success('New question successfully added', 3000);
       }
@@ -192,7 +140,6 @@ export default function QuestionsTable() {
             appearance="primary"
             onClick={() => {
               mutate('/api/questions?id=' + catid);
-
               updateQuestion();
             }}>
             <Icon icon="save" />
@@ -201,10 +148,8 @@ export default function QuestionsTable() {
             aria-label={'Cancel'}
             color="red"
             onClick={() => {
-              // No row is being edited so reset this value
               editedRow = null;
               setEditing(null);
-              // Refetch to ensure no stale data
               mutate('/api/questions?id=' + catid);
             }}>
             <Icon icon="close" />
@@ -217,7 +162,6 @@ export default function QuestionsTable() {
           <Button
             aria-label={'Edit Question'}
             id={'edit' + i}
-            // appearance="primary"
             color="green"
             onClick={() => setEditing(i)}>
             <Icon icon="pencil" />

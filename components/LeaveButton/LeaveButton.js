@@ -23,7 +23,6 @@ function LeaveButton() {
       duration: 0,
       description: (
         <div>
-          {/* <p>To join a new department you will need a new unique URL.</p> */}
           <ButtonToolbar className={styles.buttons}>
             <Button onClick={() => Notification.close()}>Cancel</Button>
             <Button
@@ -50,7 +49,7 @@ function LeaveButton() {
           <p>
             {message
               ? `Error: ${message}.`
-              : `Error: leaving department failed. Please try again later or contact system administrator.`}
+              : `Error: leaving platform failed. Please try again later or contact system administrator.`}
           </p>
           <ButtonToolbar className={styles.buttons}>
             <Button onClick={() => Notification.close()}>Continue</Button>

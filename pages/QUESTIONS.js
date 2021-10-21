@@ -16,15 +16,6 @@ export async function getServerSideProps(context) {
   };
 }
 
-/**
- * The admin page allows administrators to manage and add new questions, via the QuestionsTable component.
- * If the user is not logged in, they are prompted to login.
- *
- * All other users do not have access to this page.
- *
- * @param session the user's session object to decide what to display
- * @param toggleTheme the global function to toggle the current theme
- */
 function Manage({ session, toggleTheme }) {
   if (!session) {
     return (
@@ -38,7 +29,7 @@ function Manage({ session, toggleTheme }) {
   return (
     <div>
       <Head>
-        <title>Manage</title>
+        <title>Platforms</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header session={session} toggleTheme={toggleTheme} />

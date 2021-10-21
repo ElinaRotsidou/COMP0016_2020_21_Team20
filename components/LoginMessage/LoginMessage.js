@@ -5,7 +5,7 @@ function LoginMessage() {
   return (
     <div style={{ textAlign: 'center' }}>
       <p style={{ marginTop: '19px' }}>
-        You must login or register to use the Care Quality Dashboard.
+        You must login or register to use the Dashboard.
       </p>
 
       <Button

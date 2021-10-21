@@ -12,8 +12,8 @@ const wrapper = mount(
     data={['']}
     columns={[
       {
-        id: 'department',
-        label: 'Department Name',
+        id: 'platform',
+        label: 'Platform Name',
         width: 'auto',
         render: () => null,
       },
@@ -28,14 +28,6 @@ const wrapper = mount(
     renderActionCells={() => {
       return (
         <div>
-          <CopyToClipboard text="test">
-            <Button appearance="primary" onClick={() => null}>
-              <Icon icon="clone" />
-            </Button>
-          </CopyToClipboard>
-          <Button appearance="primary" onClick={() => null}>
-            Re-generate URL
-          </Button>
           <Button color="red" onClick={() => null}>
             Delete
           </Button>
@@ -52,18 +44,12 @@ describe('CustomTable', () => {
   });
 
   it('shows headings', () => {
-    expect(wrapper.findWhere(n => n.contains('Department Name')));
+    expect(wrapper.findWhere(n => n.contains('Platform Name')));
     expect(wrapper.findWhere(n => n.contains('Join URL')));
     expect(wrapper.findWhere(n => n.contains('Actions')));
   });
 
   it('shows actions', () => {
-    expect(wrapper.find('CopyToClipboard').exists());
-    expect(
-      wrapper.findWhere(
-        n => n.type() === 'Button' && n.contains('Re-generate URL')
-      )
-    );
     expect(
       wrapper.findWhere(n => n.type() === 'Button' && n.contains('Delete'))
     );

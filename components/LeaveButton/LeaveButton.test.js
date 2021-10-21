@@ -13,7 +13,7 @@ describe('LeaveButton', () => {
   it('displays text', () => {
     const wrapper = mount(<LeaveButton />);
 
-    expect(wrapper.find('div').text()).toBe('Leave Department');
+    expect(wrapper.find('div').text()).toBe('Leave Platform');
   });
 
   it('click displays pop up', () => {
@@ -22,7 +22,7 @@ describe('LeaveButton', () => {
     wrapper.find('div').simulate('click');
     expect(
       wrapper.findWhere(n =>
-        n.contains('Are you sure you want to leave your department?')
+        n.contains('Are you sure you want to leave your platform?')
       )
     );
   });

@@ -1,11 +1,9 @@
 import { signOut } from 'next-auth/client';
 import { Dropdown, Icon } from 'rsuite';
-import styles from './ProfileButton.module.css';
 import PropTypes from 'prop-types';
 
 import { LeaveButton } from '../';
 
-import config from '../../lib/config';
 import { Roles } from '../../lib/constants';
 
 function ProfileButton({ session }) {
@@ -17,15 +15,6 @@ function ProfileButton({ session }) {
           <LeaveButton />
         </Dropdown.Item>
       )}
-      <Dropdown.Item role="menuitem">
-        <a
-          className={styles.link}
-          href={config.KEYCLOAK_USER_ACCOUNT_MANAGE_URL}
-          target="_blank"
-          rel="noopener noreferrer">
-          Account settings
-        </a>
-      </Dropdown.Item>
       <Dropdown.Item
         role="menuitem"
         onSelect={() => signOut({ callbackUrl: '/', redirect: true })}>

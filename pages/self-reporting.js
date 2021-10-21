@@ -174,11 +174,7 @@ function SelfReporting({ session, toggleTheme }) {
     );
   }
 
-  if (
-    !session.user.roles.includes(Roles.USER_TYPE_DEPARTMENT) &&
-    !session.user.roles.includes(Roles.USER_TYPE_USER) &&
-    !session.user.roles.includes(Roles.USER_TYPE_CLINICIAN)
-  ) {
+  if (!session.user.roles.includes(Roles.USER_TYPE_USER)) {
     return (
       <div>
         <Header session={session} toggleTheme={toggleTheme} />
@@ -259,19 +255,6 @@ function SelfReporting({ session, toggleTheme }) {
               showError={showErrors && typeof question.score === 'undefined'}
             />
           ))}
-
-        {/* {!questionsError &&
-          !isQuestionsLoading &&
-          wordsQuestions.map((question, i) => (
-            <WordsQuestion
-              key={i}
-              suggestedWords={words ? words.words : []}
-              question={question.body}
-              questionId={question.id}
-              questionNumber={i + likertScaleQuestions.length + 1}
-              onChange={words => (question.words = words)}
-            />
-          ))} */}
 
         {!questionsError && !isQuestionsLoading && (
           <IconButton

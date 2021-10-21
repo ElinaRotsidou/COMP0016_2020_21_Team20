@@ -2,203 +2,6 @@ import requiresAuth from '../../lib/requiresAuthApiMiddleware';
 import prisma from '../../lib/prisma';
 import { Roles } from '../../lib/constants';
 
-/**
- * @swagger
- * tags:
- *  name: responses
- *  description: Self-report responses
- */
-
-/**
- * @swagger
- * components:
- *  schemas:
- *    response:
- *      properties:
- *        id:
- *         type: integer
- *         example: 1
- *        timestamp:
- *          type: string
- *          example: 2020-12-01T13:00:00.000Z
- *        is_mentoring_session:
- *          type: boolean
- *          example: false
- *        departments:
- *          type: object
- *          properties:
- *            id:
- *              type: integer
- *              example: 1
- *            name:
- *              type: string
- *              example: Band 5 Physiotherapist
- *            hospital_id:
- *              type: integer
- *              example: 1
- *            archived:
- *              type: boolean
- *              example: false
- *        words:
- *          type: array
- *          items:
- *            type: object
- *            properties:
- *              id:
- *                type: integer
- *                example: 1
- *              response_id:
- *                type: integer
- *                example: 1
- *              word:
- *                type: string
- *                example: complex
- *              question_id:
- *                type: integer
- *                example: 1
- *        scores:
- *          type: array
- *          items:
- *            type: object
- *            properties:
- *              standards:
- *                type: object
- *                properties:
- *                  id:
- *                    type: integer
- *                    example: 6
- *                  name:
- *                    type: string
- *                    example: Timely Care
- *              score:
- *                type: integer
- *                example: 4
- */
-
-/**
- * @swagger
- * /responses:
- *  get:
- *    summary: Retrieve the self-report responses
- *    description: Retrieve the list of responses stored in the system, according to the specified filters
- *    tags: [responses]
- *    parameters:
- *      - in: query
- *        name: from
- *        schema:
- *          type: integer
- *        required: false
- *        description: Unix Epoch timestamp (milliseconds) representing the start date you want responses from
- *      - in: query
- *        name: to
- *        schema:
- *          type: integer
- *        required: false
- *        description: Unix Epoch timestamp (milliseconds) representing the end date you want responses to
- *      - in: query
- *        name: only_is_mentoring_session
- *        schema:
- *          type: string
- *        required: false
- *        example: 1
- *        description: Whether you want responses only for mentoring sessions (this takes precedence over only_not_mentoring_session)
- *      - in: query
- *        name: only_not_mentoring_session
- *        schema:
- *          type: string
- *        required: false
- *        example: 1
- *        description: Whether you want responses only for non-mentoring sessions (overriden by only_not_mentoring_session if provided)
- *      - in: query
- *        name: user_id
- *        schema:
- *          type: integer
- *        required: false
- *        example: 1
- *        description: "The user ID you want to fetch responses for (overrides the default which is to return responses relevant to your user type). Note: this is only relevant for department manager user types."
- *      - in: query
- *        name: department_id
- *        schema:
- *          type: integer
- *        required: false
- *        example: 1
- *        description: "The department ID you want to fetch responses for (overrides the default which is to return responses relevant to your user type). Note: this is only relevant for hospital user types."
- *      - in: query
- *        name: hospital_id
- *        schema:
- *          type: integer
- *        required: false
- *        example: 1
- *        description: "The department ID you want to fetch responses for (overrides the default which is to return responses relevant to your user type). Note: this is only relevant for health board user types."
- *    responses:
- *      200:
- *        description: Success
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                responses:
- *                  type: array
- *                  items:
- *                    $ref: '#/components/schemas/response'
- *                averages:
- *                  type: object
- *                  additionalProperties:
- *                    type: number
- *
- *      401:
- *        $ref: '#/components/responses/unauthorized'
- *      500:
- *        $ref: '#/components/responses/internal_server_error'
- *  post:
- *    summary: Submit a self-report response
- *    description: Submit a self-report response to be associated with the logged in user
- *    tags: [responses]
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              scores:
- *                type: array
- *                items:
- *                  type: object
- *                  properties:
- *                    standardId:
- *                      type: integer
- *                      example: 6
- *                    score:
- *                      type: integer
- *                      example: 2
- *              words:
- *                type: array
- *                items:
- *                  type: object
- *                  properties:
- *                    questionId:
- *                      type: integer
- *                      example: 8
- *                    word:
- *                      type: string
- *                      example: tiring
- *              is_mentoring_session:
- *                type: boolean
- *                example: true
- *    responses:
- *      200:
- *        description: Success
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/response'
- *      401:
- *        $ref: '#/components/responses/unauthorized'
- *      500:
- *        $ref: '#/components/responses/internal_server_error'
- */
 const handler = async (req, res) => {
   const { session } = req;
 
@@ -211,7 +14,6 @@ const handler = async (req, res) => {
 
       user_id: userIdOverride,
       platform_id: platformIdOverride,
-      // hospital_id: hospitalIdOverride,
     } = req.query;
 
     const filters = [];
@@ -219,7 +21,6 @@ const handler = async (req, res) => {
     if (from) filters.push({ timestamp: { gte: new Date(+from) } });
     if (to) filters.push({ timestamp: { lte: new Date(+to) } });
 
-    // Default will be with BOTH included
     if (onlyIsMentoringSession === '1') {
       filters.push({ is_mentoring_session: true });
     } else if (onlyNotMentoringSession === '1') {
@@ -232,13 +33,12 @@ const handler = async (req, res) => {
       }
 
       filters.push({
-        platforms: { id: { equals: session.user.platformId } },
+        user_id: { equals: session.user.userId },
       });
 
       if (userIdOverride && userIdOverride === session.user.userId) {
         filters.push({ user_id: { equals: session.user.userId } });
       }
-
       if (platformIdOverride) {
         filters.push({
           platforms: { id: { equals: +platformIdOverride } },
@@ -281,28 +81,23 @@ const handler = async (req, res) => {
         })
       : await prisma.responses.findMany({ select, orderBy });
 
-    const scoresPerStandard = {};
+    const scorePerQuestion = {};
     responses.forEach(val =>
       val.scores.forEach(score => {
-        if (scoresPerStandard[score.response_id]) {
-          scoresPerStandard[score.response_id].push(score.score);
+        if (scorePerQuestion[score.response_id]) {
+          scorePerQuestion[score.response_id].push(score.score);
         } else {
-          scoresPerStandard[score.response_id] = [score.score];
+          scorePerQuestion[score.response_id] = [score.score];
         }
       })
     );
 
     const responseData = { responses, averages: {} };
-    Object.entries(scoresPerStandard).map(
+    Object.entries(scorePerQuestion).map(
       ([standard, scores]) =>
         (responseData.averages[standard] =
           scores.reduce((acc, val) => acc + val, 0) / scores.length)
     );
-
-    console.log('responseData');
-
-    console.log(responseData[(0, 0)]);
-
     return res.json(responseData);
   }
 

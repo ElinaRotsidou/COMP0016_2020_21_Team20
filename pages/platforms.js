@@ -1,7 +1,6 @@
 import { getSession } from 'next-auth/client';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
-import { Panel, PanelGroup, Table, Button, Icon } from 'rsuite';
 
 import { Header, LoginMessage, NoAccess, PlatformsTable } from '../components';
 
@@ -25,16 +24,10 @@ function ManagePlat({ session, host, toggleTheme }) {
       </div>
     );
   }
-
-  // function addCode() {
-  //    document.getElementById("add_to_me").innerHTML +=
-  //    "<h3>This is the text which has been inserted by JS</h3>";
-  // };
-
   return (
     <div>
       <Head>
-        <title>Manage</title>
+        <title>Platforms</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header session={session} toggleTheme={toggleTheme} />

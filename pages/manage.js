@@ -3,15 +3,8 @@ import Head from 'next/head';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, ButtonGroup, Modal } from 'rsuite';
-import { Panel, PanelGroup } from 'rsuite';
 
-import {
-  Header,
-  LoginMessage,
-  NewUserForm,
-  NoAccess,
-  NewEntityForm,
-} from '../components';
+import { Header, LoginMessage, NewUserForm, NoAccess } from '../components';
 
 import { Roles } from '../lib/constants';
 
@@ -24,22 +17,6 @@ export async function getServerSideProps(context) {
   };
 }
 
-/**
- * The manage page is used to provide various management functionality depending on the user type.
- * If the user is not logged in, they are prompted to login.
- *
- * The current management functionality, for each user type is:
- * - Department Managers: Manage the department-specific Question Training URLs, and their
- * department's Join Code
- * - Hospitals: Manage the departments in their hospital, and their join codes
- * - Administrators: Manage the health boards, hospitals, and users in the system
- *
- * All other users do not have access to this page.
- *
- * @param session the user's session object to decide what to display
- * @param toggleTheme the global function to toggle the current theme
- * @param host The host name of the website
- */
 function Manage({ session, host, toggleTheme }) {
   const [addNewUserModalUserType, setAddNewUserModalUserType] = useState(null);
   const [addNewEntityModalType, setAddNewEntityModalType] = useState(null);

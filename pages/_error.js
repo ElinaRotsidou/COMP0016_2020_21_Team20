@@ -16,7 +16,7 @@ function Error({ statusCode }) {
       <Nav className={styles.header}>
         <Link href="/">
           <Nav.Item className={styles.logoWrapper}>
-            <span className={styles.logo}>CQ Dashboard</span>
+            <span className={styles.logo}>My Dashboard</span>
           </Nav.Item>
         </Link>
       </Nav>

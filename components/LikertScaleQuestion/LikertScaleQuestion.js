@@ -15,11 +15,6 @@ function LikertScaleQuestion(props) {
         <text id={'q' + props.questionNumber}>{'    ' + props.question}</text>
       </div>
 
-      {/* <text id={'q' + props.questionNumber}>
-          {props.questionNumber + '. ' + props.question + '    ' + props.questionCategory}
-        </text> */}
-      {/* <Info url={props.questionCategpry} /> */}
-
       {props.showError && (
         <div className={styles.unAnsweredAlert}>*please choose an answer</div>
       )}
@@ -37,7 +32,7 @@ LikertScaleQuestion.propTypes = {
   onChange: PropTypes.func.isRequired,
   /** The question number of the question */
   questionNumber: PropTypes.number.isRequired,
-  /** The training url for the question */
+  /** The category for the question */
   questionCategory: PropTypes.string.isRequired,
   /** The text of the question */
   question: PropTypes.string.isRequired,

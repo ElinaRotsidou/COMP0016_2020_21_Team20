@@ -49,25 +49,6 @@ const errors = {
       </div>
     ),
   },
-  departmentdeleted: {
-    heading: 'Department deleted',
-    message: (
-      <div>
-        <p>Your department was deleted by your hospital.</p>
-        <p>
-          Please log in again, and request a new join URL to join another
-          department.
-        </p>
-        <p>
-          <Button
-            appearance="primary"
-            onClick={() => signIn('keycloak', { callbackUrl: '/' })}>
-            Sign in
-          </Button>
-        </p>
-      </div>
-    ),
-  },
   invaliduser: {
     heading: 'Unable to sign in',
     message: (
@@ -89,22 +70,11 @@ export async function getServerSideProps(context) {
   return { props: { session: await getSession(context) } };
 }
 
-/**
- * This page is the home/landing page of the platform.
- * If there are no errors, then the header is displayed along with a welcome message
- * and a features list to show he user what the platform allows you to achieve.
- *
- * If the user is not logged in, an additional login/register button and a "Get Started" message are shown.
- *
- * @param session the user's session object to decide what to display
- * @param toggleTheme the global function to toggle the current theme
- */
 function Home({ session, toggleTheme }) {
   const router = useRouter();
   const featuresRef = useRef(null);
 
   const showError = error => {
-    // Don't do exact match
     error = error.toLowerCase();
     const key = Object.keys(errors).find(e => error.indexOf(e) > -1);
 
@@ -127,7 +97,7 @@ function Home({ session, toggleTheme }) {
   return (
     <div>
       <Head>
-        <title>Care Quality Dashboard</title>
+        <title>My Quality Dashboard</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header session={session} toggleTheme={toggleTheme} />
@@ -136,7 +106,7 @@ function Home({ session, toggleTheme }) {
         <div className={styles.container}>
           {router.query && router.query.error && showError(router.query.error)}
           <main className={styles.mainContent}>
-            <h1 className={styles.title}>Welcome to Care Quality Dashboard</h1>
+            <h1 className={styles.title}>Welcome to My Dashboard</h1>
             {!session && (
               <div className={styles.loginButton}>
                 <div className={styles.titleleft}>
@@ -149,11 +119,11 @@ function Home({ session, toggleTheme }) {
                     marginBottom: '5px',
                     textAlign: 'left',
                   }}>
-                  If this is your first time using the Care Quality Dashboard,
-                  please contact your department or hospital manager to obtain a
-                  unique Join URL. This will automatically link your account to
-                  your corresponding department or hospital, so you can start
-                  completing self-reports and viewing your statistics.
+                  If this is your first time using the My Dashboard, please
+                  contact the person who shared this platform with you to
+                  provide you with a unique URL. This will automatically link
+                  your account to the platform that the URL belongs, so you can
+                  start completing self-reports and viewing your statistics.
                 </p>
 
                 <Button
@@ -178,11 +148,11 @@ function Home({ session, toggleTheme }) {
                 />
 
                 <p style={{ textAlign: 'left' }}>
-                  Complete your self-reporting on the device of your choice in a
-                  matter of minutes. The self-reporting page is clear and simple
-                  to use allowing you to efficiently report your recent
-                  experience. Remember to submit as your answers are not
-                  automatically saved.
+                  In a matter of minutes, complete your self-reporting on the
+                  device of your choosing. The self-reporting website is clear
+                  and simple to use, allowing you to quickly record your recent
+                  experience. Remember to submit your answers because they are
+                  not saved automatically.
                 </p>
               </div>
 
@@ -194,11 +164,10 @@ function Home({ session, toggleTheme }) {
                   height={96}
                 />
                 <p style={{ textAlign: 'left' }}>
-                  Track your self-reporting any time and on any device. The
-                  statistics page gives you great flexibilty allowing you to
-                  change data ranges and whether the submissions were a part of
-                  a mentoring session. There is also a quick to read summary at
-                  the top which gives you great insight of your average.
+                  Track your self-reporting from any device and at any time. The
+                  statistics page provides you a lot of flexibility, allowing
+                  you to modify data ranges and whether or not your
+                  submissions were part of a mentoring session. 
                 </p>
               </div>
 
@@ -211,10 +180,9 @@ function Home({ session, toggleTheme }) {
                 />
                 <p style={{ textAlign: 'left' }}>
                   Complete your self-reporting by yourself or as part of a
-                  mentoring session. You and your managers can then use these
-                  useful meaningful insights to spark conversaions on how you
-                  and your department can improve and what areas are doing well
-                  and need to be maintained.
+                  mentoring session.You and your platform administrator may then
+                  utilise these valuable relevant insights to start discussions
+                  about how you and your platform administator can improve.
                 </p>
               </div>
             </div>
@@ -228,10 +196,6 @@ function Home({ session, toggleTheme }) {
         <div className={styles.cube}></div>
         <div className={styles.cube}></div>
       </div>
-
-      {/* <div className={styles.iconInfo}>
-        <a href="https://icons8.com">Icons by Icons8</a>
-      </div> */}
     </div>
   );
 }

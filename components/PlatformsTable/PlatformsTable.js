@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  Button,
-  Icon,
-  Input,
-  SelectPicker,
-  Alert,
-  Panel,
-  PanelGroup,
-} from 'rsuite';
+import { Button, Icon, Input, Alert } from 'rsuite';
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -28,8 +20,6 @@ const columns = [
     width: 'auto',
     render: (edited, row, host, i) => {
       if (edited) {
-        // If this question is being edited then it needs to be an input box
-        // Copy all the info about the row being currently edited
         const buffer = {};
         Object.assign(buffer, row);
         editedRow = buffer;
@@ -94,7 +84,6 @@ export default function Testing({ host }) {
       Alert.error(res.message, 0);
     } else {
       setEditing(null);
-      // Refetch to ensure no stale data
       mutate('/api/platforms');
       Alert.success('Platform successfully updated', 3000);
     }
@@ -109,7 +98,6 @@ export default function Testing({ host }) {
     if (res.error) {
       Alert.error(res.message, 0);
     } else {
-      // Refetch to ensure no stale data
       mutate('/api/platforms');
       Alert.success('Platform successfully deleted', 3000);
     }
@@ -117,9 +105,9 @@ export default function Testing({ host }) {
 
   const addNewPlatform = async () => {
     if (!newRow.name) {
-      // setDialogText(
-      //   <div className={styles.alertText}>*Please fill in each field</div>
-      // );
+      setDialogText(
+        <div className={styles.alertText}>*Please fill in each field</div>
+      );
     } else {
       const res = await fetch('/api/platforms/', {
         method: 'POST',
@@ -156,10 +144,8 @@ export default function Testing({ host }) {
             aria-label={'Cancel'}
             color="red"
             onClick={() => {
-              // No row is being edited so reset this value
               editedRow = null;
               setEditing(null);
-              // Refetch to ensure no stale data
               mutate('/api/platforms');
             }}>
             <Icon icon="close" />
@@ -183,17 +169,13 @@ export default function Testing({ host }) {
           </CopyToClipboard>
           <Link
             href={{ pathname: '/CATEGORIES', query: { platform_id: row.id } }}>
-            <Button
-              float="right"
-              // appearance="subtle"
-              color="orange">
+            <Button float="right" color="orange">
               <Icon icon="eye" />
             </Button>
           </Link>
           <Button
             aria-label={'Edit Platform'}
             id={'edit' + i}
-            // appearance="subtle"
             color="green"
             onClick={() => setEditing(i)}>
             <Icon icon="pencil" />

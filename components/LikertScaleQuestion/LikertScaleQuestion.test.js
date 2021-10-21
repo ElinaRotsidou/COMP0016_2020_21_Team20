@@ -9,7 +9,7 @@ describe('LikertScaleQuestion', () => {
       <LikertScaleQuestion
         onChange={() => null}
         questionNumber={1}
-        questionUrl="http://www.example.com"
+        questionCategory={1}
         question="This is a good test question?"
         showError={false}
       />
@@ -21,11 +21,12 @@ describe('LikertScaleQuestion', () => {
   it('displays question', () => {
     const testQuestion = 'This is a good test question?';
     const testNumber = 1;
+    const testCategory = 1;
     const wrapper = mount(
       <LikertScaleQuestion
         onChange={() => null}
         questionNumber={testNumber}
-        questionUrl="http://www.example.com"
+        questionCategory={testCategory}
         question={testQuestion}
         showError={false}
       />

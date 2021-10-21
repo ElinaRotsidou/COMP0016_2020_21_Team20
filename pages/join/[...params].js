@@ -4,7 +4,7 @@ import { getSession } from 'next-auth/client';
 import PropTypes from 'prop-types';
 import { Header, LoginMessage } from '../../components';
 
-import setUserDepartmentAndRole from '../../lib/setUserDepartmentAndRole';
+import setUserPlatformAndRole from '../../lib/setUserPlatformAndRole';
 import prisma from '../../lib/prisma';
 import { Roles } from '../../lib/constants';
 
@@ -35,7 +35,7 @@ export const getServerSideProps = async context => {
 
   if (!platform) return { props: { invalidCode: true } };
 
-  const success = await setUserDepartmentAndRole({
+  const success = await setUserPlatformAndRole({
     platformId: platform.platform_id,
     userId: session.user.userId,
     newUserType: type,
@@ -85,7 +85,7 @@ function Join({ session, ...props }) {
     <div>
       <Header session={session} />
       {/* {!session.user.roles.includes(Roles.USER_TYPE_UNKNOWN) &&
-        'You are not eligible to join a department at this time.'} */}
+        'You are not eligible to join a platform at this time.'} */}
       {props.invalidCode &&
         'Your join code is invalid. Please ensure your code has not expired and is exactly as you were provided.'}
       {props.success === true &&

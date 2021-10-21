@@ -14,8 +14,6 @@ describe('QuestionsTable', () => {
     const wrapper = mount(<QuestionsTable />);
 
     expect(wrapper.findWhere(n => n.contains('Question body')));
-    expect(wrapper.findWhere(n => n.contains('Standard')));
-    expect(wrapper.findWhere(n => n.contains('Training URL')));
     expect(wrapper.findWhere(n => n.contains('Actions')));
   });
 
